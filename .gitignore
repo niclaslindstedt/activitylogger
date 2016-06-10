@@ -1,0 +1,12 @@
+obj/
+bin/
+lib/
+packages/
+.vs/
+*.user
+docs/
+run/
+test/
+.idea/
+*.iml
+*.DotSettings
