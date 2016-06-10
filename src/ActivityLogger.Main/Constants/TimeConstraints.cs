@@ -1,4 +1,4 @@
-﻿namespace WorkLogger.Main.Constants
+﻿namespace ActivityLogger.Main.Constants
 {
     public static class TimeConstraints
     {

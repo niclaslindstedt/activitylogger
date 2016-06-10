@@ -5,10 +5,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WorkLogger.Main.Constants;
-using WorkLogger.Main.Services;
+using ActivityLogger.Main.Constants;
+using ActivityLogger.Main.Services;
 
-namespace WorkLogger.Main
+namespace ActivityLogger.Main
 {
     internal class Program
     {
@@ -22,7 +22,7 @@ namespace WorkLogger.Main
         // These are directly work related processes
         public static List<string> WorkProcesses = new List<string>()
         {
-            $"WorkLogger.Main .+? Microsoft Visual Studio", // Visual Studio
+            $"ActivityLogger .+? Microsoft Visual Studio", // Visual Studio (for project ActivityLogger)
         };
 
         // These are indirectly work related processes, e.g. browsing for help in Chrome

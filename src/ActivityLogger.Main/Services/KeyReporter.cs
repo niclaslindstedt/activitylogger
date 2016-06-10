@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace WorkLogger.Main.Services
+namespace ActivityLogger.Main.Services
 {
     public class KeyReporter : ActivityReporter<Keys>
     {

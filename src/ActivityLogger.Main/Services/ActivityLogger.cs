@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WorkLogger.Main.Services
+namespace ActivityLogger.Main.Services
 {
     public abstract class ActivityLogger<TType> : IObservable<TType>, IDisposable
     {

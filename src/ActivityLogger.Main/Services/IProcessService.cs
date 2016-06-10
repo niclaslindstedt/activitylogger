@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WorkLogger.Main.Services
+namespace ActivityLogger.Main.Services
 {
     public interface IProcessService
     {

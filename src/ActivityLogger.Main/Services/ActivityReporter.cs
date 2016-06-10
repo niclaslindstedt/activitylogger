@@ -1,7 +1,7 @@
 ﻿using System;
-using WorkLogger.Main.Constants;
+using ActivityLogger.Main.Constants;
 
-namespace WorkLogger.Main.Services
+namespace ActivityLogger.Main.Services
 {
     public abstract class ActivityReporter<TType> : IActivityReporter, IObserver<TType>
     {

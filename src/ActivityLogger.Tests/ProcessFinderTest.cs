@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
-using WorkLogger.Main.Services;
+using ActivityLogger.Main.Services;
 
-namespace WorkLogger.Tests
+namespace ActivityLogger.Tests
 {
     [TestFixture]
     public class ProcessFinderTest

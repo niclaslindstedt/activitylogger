@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace WorkLogger.Main.Services
+namespace ActivityLogger.Main.Services
 {
     public class MouseReporter : ActivityReporter<Point>
     {

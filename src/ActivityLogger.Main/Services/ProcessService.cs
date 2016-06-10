@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-namespace WorkLogger.Main.Services
+namespace ActivityLogger.Main.Services
 {
     public class ProcessService : IProcessService
     {
