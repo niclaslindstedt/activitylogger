@@ -15,6 +15,7 @@ namespace ActivityLogger.Main
         public static IProcessService ProcessService;
         public static KeyReporter KeyReporter;
         public static MouseReporter MouseReporter;
+        public static Settings Settings;
 
         public static int ActiveSeconds;
         private static readonly Dictionary<string, int> ActiveProcessesRecord = new Dictionary<string, int>();
@@ -34,6 +35,7 @@ namespace ActivityLogger.Main
 
         static void Main(string[] args)
         {
+            Settings = new Settings();
             ProcessService = new ProcessService();
             KeyReporter = new KeyReporter();
             KeyReporter.Subscribe(KeyLogger.Instance());
@@ -47,9 +49,9 @@ namespace ActivityLogger.Main
                     Thread.Sleep(1000);
 
                     var activeWorkProcess = ProcessService.GetActiveProcessFromList(WorkProcesses,
-                        TimeConstraints.AllowedIdleSecondsForWork);
+                        Settings.AllowedIdleSecondsForWork);
                     var activeWorkRelatedProcess = ProcessService.GetActiveProcessFromList(WorkRelatedProcesses,
-                        TimeConstraints.AllowedIdleSecondsForWorkRelated);
+                        Settings.AllowedIdleSecondsForWorkRelated);
 
                     Console.Clear();
                     Console.WriteLine($"Development environment active for: {ActiveSeconds} seconds");
@@ -83,13 +85,13 @@ namespace ActivityLogger.Main
 
         private static bool IsWorkProcessesActive()
         {
-            return WorkProcesses.Select(x => ProcessService.IsProcessActive(x, TimeConstraints.AllowedIdleSecondsForWork))
+            return WorkProcesses.Select(x => ProcessService.IsProcessActive(x, Settings.AllowedIdleSecondsForWork))
                 .Any(x => x.Equals(true));
         }
 
         private static bool IsWorkRelatedProcessesActive()
         {
-            return WorkRelatedProcesses.Select(x => ProcessService.IsProcessActive(x, TimeConstraints.AllowedIdleSecondsForWorkRelated))
+            return WorkRelatedProcesses.Select(x => ProcessService.IsProcessActive(x, Settings.AllowedIdleSecondsForWorkRelated))
                 .Any(x => x.Equals(true));
         }
     }

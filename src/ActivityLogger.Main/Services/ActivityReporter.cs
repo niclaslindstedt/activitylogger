@@ -1,12 +1,11 @@
 ﻿using System;
-using ActivityLogger.Main.Constants;
 
 namespace ActivityLogger.Main.Services
 {
     public abstract class ActivityReporter<TType> : IActivityReporter, IObserver<TType>
     {
         public DateTime LastActivity { get; private set; } = DateTime.MinValue;
-        public bool UserIsActive => DateTime.Now - LastActivity < TimeSpan.FromSeconds(TimeConstraints.SecondsBeforeConsideredIdle);
+        public bool UserIsActive => DateTime.Now - LastActivity < TimeSpan.FromSeconds(Program.Settings.SecondsBeforeConsideredIdle);
 
         protected IDisposable Unsubscriber;
 

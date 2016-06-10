@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -57,9 +58,16 @@ namespace ActivityLogger.Main.Services
             uint processId;
             GetWindowThreadProcessId(hwnd, out processId);
 
-            _currentProcess = Process.GetProcessById((int) processId);
-            _currentModuleName = _currentProcess.MainModule.ModuleName;
-            _currentWindowTitle = _currentProcess.MainWindowTitle;
+            try
+            {
+                _currentProcess = Process.GetProcessById((int) processId);
+                _currentModuleName = _currentProcess.MainModule.ModuleName;
+                _currentWindowTitle = _currentProcess.MainWindowTitle;
+            }
+            catch (Win32Exception ex)
+            {
+                Debug.Print(ex.Message);
+            }
 
             return _currentProcess;
         }
