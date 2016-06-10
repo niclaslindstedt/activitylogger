@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace WorkLogger.Main
+namespace WorkLogger.Main.Services
 {
-    public interface IActivityService
+    public interface IActivityReporter
     {
         DateTime LastActivity { get; }
         bool UserIsActive { get; }

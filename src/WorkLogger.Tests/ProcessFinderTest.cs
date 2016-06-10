@@ -1,23 +1,23 @@
 ﻿using NUnit.Framework;
-using WorkLogger.Main;
+using WorkLogger.Main.Services;
 
 namespace WorkLogger.Tests
 {
     [TestFixture]
     public class ProcessFinderTest
     {
-        private ProcessFinder _processFinder;
+        private ProcessService _processService;
 
         [SetUp]
         public void SetUp()
         {
-            _processFinder = new ProcessFinder();
+            _processService = new ProcessService();
         }
 
         [Test]
         public void IsProcessActiveTest()
         {
-            Assert.IsTrue(_processFinder.IsProcessActive("devenv.exe", true));
+            Assert.IsTrue(_processService.IsProcessActive("devenv.exe", 10));
         }
     }
 }

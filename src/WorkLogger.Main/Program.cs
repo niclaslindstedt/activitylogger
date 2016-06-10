@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WorkLogger.Main.Constants;
+using WorkLogger.Main.Services;
 
 namespace WorkLogger.Main
 {
@@ -32,7 +34,7 @@ namespace WorkLogger.Main
 
         static void Main(string[] args)
         {
-            ProcessService = new ProcessFinder();
+            ProcessService = new ProcessService();
             KeyReporter = new KeyReporter();
             KeyReporter.Subscribe(KeyLogger.Instance());
             MouseReporter = new MouseReporter();

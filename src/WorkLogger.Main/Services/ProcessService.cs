@@ -5,9 +5,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-namespace WorkLogger.Main
+namespace WorkLogger.Main.Services
 {
-    public class ProcessFinder : IProcessService
+    public class ProcessService : IProcessService
     {
         private readonly Dictionary<string, DateTime> _lastWorkActivity = new Dictionary<string, DateTime>();
 

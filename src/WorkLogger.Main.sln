@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkLogger.Main", "WorkLogger.Main\WorkLogger.Main.csproj", "{9E25255A-562F-40DC-ACBE-2F9DDA196963}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkLogger.Tests", "..\WorkLogger.Tests\WorkLogger.Tests.csproj", "{11C7FCE5-99AC-404B-BF1B-52783C6918E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkLogger.Tests", "WorkLogger.Tests\WorkLogger.Tests.csproj", "{11C7FCE5-99AC-404B-BF1B-52783C6918E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

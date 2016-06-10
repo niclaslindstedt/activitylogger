@@ -85,18 +85,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActivityLogger.cs" />
-    <Compile Include="ActivityReporter.cs" />
-    <Compile Include="IKeyService.cs" />
-    <Compile Include="IProcessService.cs" />
-    <Compile Include="MouseLogger.cs" />
-    <Compile Include="KeyLogger.cs" />
-    <Compile Include="KeyReporter.cs" />
-    <Compile Include="MouseReporter.cs" />
-    <Compile Include="ProcessFinder.cs" />
+    <Compile Include="Services\ActivityLogger.cs" />
+    <Compile Include="Services\ActivityReporter.cs" />
+    <Compile Include="Services\IActivityReporter.cs" />
+    <Compile Include="Services\IProcessService.cs" />
+    <Compile Include="Services\MouseLogger.cs" />
+    <Compile Include="Services\KeyLogger.cs" />
+    <Compile Include="Services\KeyReporter.cs" />
+    <Compile Include="Services\MouseReporter.cs" />
+    <Compile Include="Services\ProcessService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TimeConstraints.cs" />
+    <Compile Include="Constants\TimeConstraints.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

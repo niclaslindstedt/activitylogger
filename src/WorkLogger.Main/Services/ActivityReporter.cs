@@ -1,8 +1,9 @@
 ﻿using System;
+using WorkLogger.Main.Constants;
 
-namespace WorkLogger.Main
+namespace WorkLogger.Main.Services
 {
-    public abstract class ActivityReporter<TType> : IActivityService, IObserver<TType>
+    public abstract class ActivityReporter<TType> : IActivityReporter, IObserver<TType>
     {
         public DateTime LastActivity { get; private set; } = DateTime.MinValue;
         public bool UserIsActive => DateTime.Now - LastActivity < TimeSpan.FromSeconds(TimeConstraints.SecondsBeforeConsideredIdle);

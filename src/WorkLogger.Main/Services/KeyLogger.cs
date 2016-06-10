@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
-namespace WorkLogger.Main
+namespace WorkLogger.Main.Services
 {
     public class KeyLogger : ActivityLogger<Keys>
     {
