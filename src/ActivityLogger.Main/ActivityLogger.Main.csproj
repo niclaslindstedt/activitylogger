@@ -90,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ISettingsReader.cs" />
+    <Compile Include="ITimeLogger.cs" />
     <Compile Include="Services\ActivityLogger.cs" />
     <Compile Include="Services\ActivityReporter.cs" />
     <Compile Include="Services\IActivityReporter.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Constants\TimeConstraints.cs" />
     <Compile Include="SettingsReader.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="TimeLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

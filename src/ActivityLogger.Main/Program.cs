@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -12,13 +11,16 @@ namespace ActivityLogger.Main
     internal class Program
     {
         public static IProcessService ProcessService;
+        public static ITimeLogger TimeLogger;
         public static KeyReporter KeyReporter;
         public static MouseReporter MouseReporter;
         public static Settings Settings;
 
-        public static int ActiveSeconds;
-        private static readonly Dictionary<string, int> ActiveProcessesRecord = new Dictionary<string, int>();
-        
+        private static string ActiveWorkProcess => ProcessService.GetActiveProcessFromList(Settings.WorkProcesses,
+                        Settings.AllowedIdleSecondsForWork);
+        private static string ActiveWorkRelatedProcess => ProcessService.GetActiveProcessFromList(Settings.WorkRelatedProcesses,
+                        Settings.AllowedIdleSecondsForWorkRelated);
+
         static void Main(string[] args)
         {
             Settings = new Settings(new SettingsReader("ActivityLogger.ini"));
@@ -27,61 +29,34 @@ namespace ActivityLogger.Main
             KeyReporter.Subscribe(KeyLogger.Instance());
             MouseReporter = new MouseReporter();
             MouseReporter.Subscribe(MouseLogger.Instance());
+            TimeLogger = new TimeLogger(ProcessService, KeyReporter, MouseReporter);
 
             Task.Factory.StartNew(() =>
             {
                 while (true)
                 {
                     Thread.Sleep(1000);
-
-                    var activeWorkProcess = ProcessService.GetActiveProcessFromList(Settings.WorkProcesses,
-                        Settings.AllowedIdleSecondsForWork);
-                    var activeWorkRelatedProcess = ProcessService.GetActiveProcessFromList(Settings.WorkRelatedProcesses,
-                        Settings.AllowedIdleSecondsForWorkRelated);
+                    
+                    var activeSeconds = TimeLogger.ActiveSeconds.Sum(x => x.Value);
+                    var procrastinationSeconds = TimeLogger.ProcrastinationSeconds.Sum(x => x.Value);
+                    var idleSeconds = TimeLogger.IdleSeconds.Sum(x => x.Value);
 
                     Console.Clear();
-                    Console.WriteLine($"Development environment active for: {ActiveSeconds} seconds");
+                    Console.WriteLine($"Active for: {activeSeconds} seconds");
+                    Console.WriteLine($"Procrastinating for: {procrastinationSeconds} seconds");
+                    Console.WriteLine($"Idle for: {idleSeconds} seconds");
 #if DEBUG
                     Console.WriteLine($"Current active process: {ProcessService.CurrentProcessName}");
 #endif
-                    Console.WriteLine($"Currently active work process: {activeWorkProcess ?? activeWorkRelatedProcess}");
+                    Console.WriteLine($"Currently active work process: {ActiveWorkProcess ?? ActiveWorkRelatedProcess}");
                     Console.WriteLine($"Mouse activity: {MouseReporter.UserIsActive}");
                     Console.WriteLine($"Keyboard activity: {KeyReporter.UserIsActive}");
 
-                    if (!KeyReporter.UserIsActive && !MouseReporter.UserIsActive)
-                        continue;
-                    
-                    if (IsWorkProcessesActive() || IsWorkRelatedProcessesActive())
-                    {
-                        ActiveSeconds++;
-
-                        var process = activeWorkProcess ?? activeWorkRelatedProcess;
-                        if (process != null)
-                        {
-                            if (ActiveProcessesRecord.ContainsKey(process))
-                                ActiveProcessesRecord[process]++;
-                            else
-                                ActiveProcessesRecord.Add(process, 1);
-                        }
-                    }
+                    TimeLogger.LogTime();
                 }
             });
 
             Application.Run();
-
-            File.WriteAllText("worklog.txt", $"Session: {DateTime.Now} active for {ActiveSeconds} seconds.");
-        }
-
-        private static bool IsWorkProcessesActive()
-        {
-            return Settings.WorkProcesses.Select(x => ProcessService.IsProcessActive(x, Settings.AllowedIdleSecondsForWork))
-                .Any(x => x.Equals(true));
-        }
-
-        private static bool IsWorkRelatedProcessesActive()
-        {
-            return Settings.WorkRelatedProcesses.Select(x => ProcessService.IsProcessActive(x, Settings.AllowedIdleSecondsForWorkRelated))
-                .Any(x => x.Equals(true));
         }
     }
 }

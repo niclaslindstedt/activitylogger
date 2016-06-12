@@ -4,6 +4,7 @@ namespace ActivityLogger.Main.Services
 {
     public interface IProcessService
     {
+        string CurrentProcessDescription { get; }
         string CurrentModuleName { get; }
         string CurrentWindowTitle { get; }
         string CurrentProcessName { get; }

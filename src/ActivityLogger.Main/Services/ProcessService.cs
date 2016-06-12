@@ -11,11 +11,13 @@ namespace ActivityLogger.Main.Services
     public class ProcessService : IProcessService
     {
         private readonly Dictionary<string, DateTime> _lastWorkActivity = new Dictionary<string, DateTime>();
+        private readonly Dictionary<string, string> _processMatches = new Dictionary<string, string>();
 
-        private Process _currentProcess;
-        public string CurrentModuleName => _currentProcess.MainModule.ModuleName;
-        public string CurrentWindowTitle => _currentProcess.MainWindowTitle;
-        public string CurrentProcessName => _currentProcess.ProcessName;
+        private static Process CurrentProcess => GetActiveProcess();
+        public string CurrentProcessDescription => CurrentProcess?.MainModule.FileVersionInfo.FileDescription;
+        public string CurrentModuleName => CurrentProcess?.MainModule.ModuleName;
+        public string CurrentWindowTitle => CurrentProcess?.MainWindowTitle;
+        public string CurrentProcessName => CurrentProcess?.ProcessName;
 
         public string GetActiveProcessFromList(IEnumerable<string> matchStrings, int allowedIdleSeconds)
         {
@@ -23,20 +25,20 @@ namespace ActivityLogger.Main.Services
             if (matchString == null)
                 return null;
 
-            if (IsMatchToCurrentProcess(matchString))
-                return CurrentModuleName;
-
-            return null;
+            return _processMatches[matchString];
         }
         
         private bool IsMatchToCurrentProcess(string matchString)
         {
             var regex = new Regex(matchString);
-            _currentProcess = GetActiveProcess();
             if (CurrentModuleName == matchString
                 || regex.IsMatch(CurrentWindowTitle)
                 || regex.IsMatch(CurrentProcessName))
+            {
+                if (!_processMatches.ContainsKey(matchString))
+                    _processMatches.Add(matchString, CurrentProcessDescription);
                 return true;
+            }
 
             return false;
         }
@@ -55,7 +57,7 @@ namespace ActivityLogger.Main.Services
             return (DateTime.Now - _lastWorkActivity[matchString]) < TimeSpan.FromSeconds(allowedIdleSeconds);
         }
 
-        private Process GetActiveProcess()
+        private static Process GetActiveProcess()
         {
             var hwnd = GetForegroundWindow();
             uint processId;
@@ -63,14 +65,14 @@ namespace ActivityLogger.Main.Services
 
             try
             {
-                _currentProcess = Process.GetProcessById((int) processId);
+                return Process.GetProcessById((int) processId);
             }
             catch (Win32Exception ex)
             {
                 Debug.Print(ex.Message);
             }
 
-            return _currentProcess;
+            return null;
         }
 
         [DllImport("user32.dll")]
