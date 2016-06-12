@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ActivityLogger.Main.Services
+namespace ActivityLogger.Core.Services
 {
     public class MouseLogger : ActivityLogger<Point>
     {

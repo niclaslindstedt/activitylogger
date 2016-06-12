@@ -2,7 +2,7 @@
 using System.Linq;
 using SettingsCollection = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, object>>;
 
-namespace ActivityLogger.Main
+namespace ActivityLogger.Core
 {
     public class Settings
     {

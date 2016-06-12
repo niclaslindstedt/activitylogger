@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace ActivityLogger.Main.Services
+namespace ActivityLogger.Core.Services
 {
     public class KeyReporter : ActivityReporter<Keys>
     {
@@ -8,5 +8,7 @@ namespace ActivityLogger.Main.Services
         {
             // Nothing to do
         }
+
+        public KeyReporter(Settings settings) : base(settings) { }
     }
 }

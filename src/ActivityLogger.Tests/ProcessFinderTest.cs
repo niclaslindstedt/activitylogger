@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using ActivityLogger.Main.Services;
+using ActivityLogger.Core.Services;
 
 namespace ActivityLogger.Tests
 {

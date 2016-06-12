@@ -1,13 +1,19 @@
 ﻿using System;
 
-namespace ActivityLogger.Main.Services
+namespace ActivityLogger.Core.Services
 {
     public abstract class ActivityReporter<TType> : IActivityReporter, IObserver<TType>
     {
         public DateTime LastActivity { get; private set; } = DateTime.MinValue;
-        public bool UserIsActive => DateTime.Now - LastActivity < TimeSpan.FromSeconds(Program.Settings.SecondsBeforeConsideredIdle);
+        public bool UserIsActive => DateTime.Now - LastActivity < TimeSpan.FromSeconds(Settings.SecondsBeforeConsideredIdle);
 
         protected IDisposable Unsubscriber;
+        protected Settings Settings;
+        
+        protected ActivityReporter(Settings settings)
+        {
+            Settings = settings;
+        }
 
         public virtual void Subscribe(IObservable<TType> provider)
         {

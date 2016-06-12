@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace ActivityLogger.Main.Services
+namespace ActivityLogger.Core.Services
 {
     public class KeyLogger : ActivityLogger<Keys>
     {

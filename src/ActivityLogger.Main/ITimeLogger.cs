@@ -1,13 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace ActivityLogger.Main
+﻿namespace ActivityLogger.Core
 {
     public interface ITimeLogger
     {
-        Dictionary<string, int> ActiveSeconds { get; }
-        Dictionary<string, int> ProcrastinationSeconds { get; }
-        Dictionary<string, int> IdleSeconds { get; }
-
-        void LogTime();
+        void LogTime(Settings settings);
     }
 }

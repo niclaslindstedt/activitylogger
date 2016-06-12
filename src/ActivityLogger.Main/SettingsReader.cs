@@ -5,7 +5,7 @@ using System.Linq;
 using IniParser;
 using IniParser.Model;
 
-namespace ActivityLogger.Main
+namespace ActivityLogger.Core
 {
     public class SettingsReader : ISettingsReader
     {

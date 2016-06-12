@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ActivityLogger.Main.Services
+namespace ActivityLogger.Core.Services
 {
     public interface IActivityReporter
     {

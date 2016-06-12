@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ActivityLogger.Main.Services;
+using ActivityLogger.Core.Constants;
+using ActivityLogger.Core.Services;
 
-namespace ActivityLogger.Main
+namespace ActivityLogger.Core
 {
-    public class TimeLogger : ITimeLogger
+    public class TimeLogger : ActivityLogger<Tuple<string, ActivityType, int>>, ITimeLogger
     {
-        public Dictionary<string, int> ActiveSeconds { get; } = new Dictionary<string, int>();
-        public Dictionary<string, int> ProcrastinationSeconds { get; } = new Dictionary<string, int>();
-        public Dictionary<string, int> IdleSeconds { get; } = new Dictionary<string, int>();
-        
         private readonly IProcessService _processService;
         private readonly List<IActivityReporter> _activityReporters;
         private DateTime _lastReportTime;
@@ -22,40 +19,30 @@ namespace ActivityLogger.Main
             _lastReportTime = DateTime.Now;
         }
 
-        public void LogTime()
+        public void LogTime(Settings settings)
         {
-            var activeProcess = _processService.GetActiveProcessFromList(Program.Settings.WorkProcesses,
-                Program.Settings.AllowedIdleSecondsForWork)
-                ?? _processService.GetActiveProcessFromList(Program.Settings.WorkRelatedProcesses,
-                    Program.Settings.AllowedIdleSecondsForWorkRelated);
+            var activityType = ActivityType.None;
+            var activeProcess = _processService.GetActiveProcessFromList(settings.WorkProcesses,
+                settings.AllowedIdleSecondsForWork)
+                ?? _processService.GetActiveProcessFromList(settings.WorkRelatedProcesses,
+                    settings.AllowedIdleSecondsForWorkRelated);
             if (activeProcess != null)
             {
-                if (ActiveSeconds.ContainsKey(activeProcess))
-                    ActiveSeconds[activeProcess] += GetTimeDifference();
-                else
-                    ActiveSeconds[activeProcess] = GetTimeDifference();
+                activityType = ActivityType.Work;
             }
             else
             {
                 activeProcess = _processService.CurrentProcessDescription;
                 if (activeProcess != null)
                 {
-                    if (_activityReporters.Any(x => x.UserIsActive))
-                    {
-                        if (ProcrastinationSeconds.ContainsKey(activeProcess))
-                            ProcrastinationSeconds[activeProcess] += GetTimeDifference();
-                        else
-                            ProcrastinationSeconds[activeProcess] = GetTimeDifference();
-                    }
-                    else
-                    {
-                        if (IdleSeconds.ContainsKey(activeProcess))
-                            IdleSeconds[activeProcess] += GetTimeDifference();
-                        else
-                            IdleSeconds[activeProcess] = GetTimeDifference();
-                    }
+                    activityType = _activityReporters.Any(x => x.UserIsActive)
+                        ? ActivityType.WorkRelated
+                        : ActivityType.NonWorkRelated;
                 }
             }
+
+            if (activityType != ActivityType.None)
+                Observer.OnNext(new Tuple<string, ActivityType, int>(activeProcess, activityType, GetTimeDifference()));
 
             _lastReportTime = DateTime.Now;
         }

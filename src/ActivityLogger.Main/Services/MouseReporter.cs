@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace ActivityLogger.Main.Services
+namespace ActivityLogger.Core.Services
 {
     public class MouseReporter : ActivityReporter<Point>
     {
@@ -8,5 +8,7 @@ namespace ActivityLogger.Main.Services
         {
             // Nothing to do
         }
+
+        public MouseReporter(Settings settings) : base(settings) { }
     }
 }

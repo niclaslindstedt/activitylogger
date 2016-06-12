@@ -6,7 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-namespace ActivityLogger.Main.Services
+namespace ActivityLogger.Core.Services
 {
     public class ProcessService : IProcessService
     {
@@ -14,8 +14,36 @@ namespace ActivityLogger.Main.Services
         private readonly Dictionary<string, string> _processMatches = new Dictionary<string, string>();
 
         private static Process CurrentProcess => GetActiveProcess();
-        public string CurrentProcessDescription => CurrentProcess?.MainModule.FileVersionInfo.FileDescription;
-        public string CurrentModuleName => CurrentProcess?.MainModule.ModuleName;
+
+        public string CurrentProcessDescription
+        {
+            get
+            {
+                try
+                {
+                    return CurrentProcess?.MainModule.FileVersionInfo.FileDescription;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+
+        public string CurrentModuleName
+        {
+            get
+            {
+                try
+                {
+                    return CurrentProcess?.MainModule.ModuleName;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
         public string CurrentWindowTitle => CurrentProcess?.MainWindowTitle;
         public string CurrentProcessName => CurrentProcess?.ProcessName;
 
