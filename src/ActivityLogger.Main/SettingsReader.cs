@@ -1,21 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using IniParser;
 using IniParser.Model;
 
 namespace ActivityLogger.Main
 {
-    public class SettingsReader
+    public class SettingsReader : ISettingsReader
     {
         private readonly FileIniDataParser _iniParser;
         private readonly string _fileName;
         
-        public SettingsReader()
+        public SettingsReader(string filename)
         {
             _iniParser = new FileIniDataParser();
 
             var appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ActivityLogger");
-            _fileName = Path.Combine(appDataFolder, "ActivityLogger.ini");
+            _fileName = Path.Combine(appDataFolder, filename);
 
             if (!Directory.Exists(appDataFolder))
                 Directory.CreateDirectory(appDataFolder);
@@ -40,25 +42,69 @@ namespace ActivityLogger.Main
             _iniParser.WriteFile(settingsFilename, data);
         }
 
-        public int GetSettingAsInt(string section, string setting)
-            => int.Parse(GetSetting(section, setting));
-
-        public float GetSettingAsFloat(string section, string setting)
-            => float.Parse(GetSetting(section, setting));
-
-        private string GetSetting(string section, string setting)
+        public Dictionary<string, object> GetSection(string sectionName)
         {
             var data = _iniParser.ReadFile(_fileName);
+            var sectionData = GetSectionData(data, sectionName);
 
-            var value = data[section][setting];
-            if (value != null)
-                return value;
-
-            // Return default values if data could not be retrieved from ini file
-            if (Settings.DefaultValues.ContainsKey(section) && Settings.DefaultValues[section].ContainsKey(setting))
-                return Settings.DefaultValues[section][setting].ToString();
-
-            throw new InvalidDataException("No value could be found in ini file and setting has no default value.");
+            return sectionData.Keys.ToDictionary<KeyData, string, object>(s => s.KeyName, s => s.Value);
         }
+
+        public bool GetSettingAsBool(string sectionName, string settingName, object defaultValue)
+            => bool.Parse(GetSetting(sectionName, settingName, defaultValue));
+
+        public int GetSettingAsInt(string sectionName, string settingName, object defaultValue)
+            => int.Parse(GetSetting(sectionName, settingName, defaultValue));
+
+        public float GetSettingAsFloat(string sectionName, string settingName, object defaultValue)
+            => float.Parse(GetSetting(sectionName, settingName, defaultValue));
+
+        public string GetSettingAsString(string sectionName, string settingName, object defaultValue)
+            => GetSetting(sectionName, settingName, defaultValue);
+
+        public void WriteSetting(string sectionName, string settingName, string value)
+        {
+            var data = _iniParser.ReadFile(_fileName);
+            var sectionData = GetSectionData(data, sectionName);
+            sectionData.Keys.AddKey(settingName, value);
+            _iniParser.WriteFile(_fileName, data);
+        }
+
+        private string GetSetting(string sectionName, string settingName, object defaultValue)
+        {
+            var data = _iniParser.ReadFile(_fileName);
+            var setting = GetSettingData(data, sectionName, settingName, defaultValue);
+
+            return setting.Value;
+        }
+
+        private KeyData GetSettingData(IniData data, string sectionName, string settingName, object defaultValue)
+        {
+            var sectionData = GetSectionData(data, sectionName);
+            var keyData = sectionData.Keys.GetKeyData(settingName);
+            if (keyData == null)
+            {
+                sectionData.Keys.AddKey(settingName, defaultValue.ToString());
+                _iniParser.WriteFile(_fileName, data);
+                keyData = sectionData.Keys.GetKeyData(settingName);
+            }
+
+            return keyData;
+        }
+
+        private SectionData GetSectionData(IniData data, string sectionName)
+        {
+            var sectionData = data.Sections.GetSectionData(sectionName);
+            if (sectionData == null)
+            {
+                data.Sections.AddSection(sectionName);
+                _iniParser.WriteFile(_fileName, data);
+                sectionData = data.Sections.GetSectionData(sectionName);
+            }
+
+            return sectionData;
+        }
+
+
     }
 }

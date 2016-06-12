@@ -13,8 +13,9 @@ namespace ActivityLogger.Main.Services
         private readonly Dictionary<string, DateTime> _lastWorkActivity = new Dictionary<string, DateTime>();
 
         private Process _currentProcess;
-        private string _currentModuleName;
-        private string _currentWindowTitle;
+        public string CurrentModuleName => _currentProcess.MainModule.ModuleName;
+        public string CurrentWindowTitle => _currentProcess.MainWindowTitle;
+        public string CurrentProcessName => _currentProcess.ProcessName;
 
         public string GetActiveProcessFromList(IEnumerable<string> matchStrings, int allowedIdleSeconds)
         {
@@ -23,16 +24,18 @@ namespace ActivityLogger.Main.Services
                 return null;
 
             if (IsMatchToCurrentProcess(matchString))
-                return _currentModuleName;
+                return CurrentModuleName;
 
             return null;
         }
-
+        
         private bool IsMatchToCurrentProcess(string matchString)
         {
             var regex = new Regex(matchString);
             _currentProcess = GetActiveProcess();
-            if (_currentModuleName == matchString || regex.IsMatch(_currentWindowTitle))
+            if (CurrentModuleName == matchString
+                || regex.IsMatch(CurrentWindowTitle)
+                || regex.IsMatch(CurrentProcessName))
                 return true;
 
             return false;
@@ -61,8 +64,6 @@ namespace ActivityLogger.Main.Services
             try
             {
                 _currentProcess = Process.GetProcessById((int) processId);
-                _currentModuleName = _currentProcess.MainModule.ModuleName;
-                _currentWindowTitle = _currentProcess.MainWindowTitle;
             }
             catch (Win32Exception ex)
             {
