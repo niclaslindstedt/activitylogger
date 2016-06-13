@@ -93,7 +93,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ActivityLogger.Main\ActivityLogger.Core.csproj">
+    <ProjectReference Include="..\ActivityLogger.Core\ActivityLogger.Core.csproj">
       <Project>{9E25255A-562F-40DC-ACBE-2F9DDA196963}</Project>
       <Name>ActivityLogger.Core</Name>
     </ProjectReference>

@@ -154,7 +154,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ActivityLogger.Main\ActivityLogger.Core.csproj">
+    <ProjectReference Include="..\ActivityLogger.Core\ActivityLogger.Core.csproj">
       <Project>{9e25255a-562f-40dc-acbe-2f9dda196963}</Project>
       <Name>ActivityLogger.Core</Name>
     </ProjectReference>

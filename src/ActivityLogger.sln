@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityLogger.Core", "ActivityLogger.Main\ActivityLogger.Core.csproj", "{9E25255A-562F-40DC-ACBE-2F9DDA196963}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityLogger.Core", "ActivityLogger.Core\ActivityLogger.Core.csproj", "{9E25255A-562F-40DC-ACBE-2F9DDA196963}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityLogger.Tests", "ActivityLogger.Tests\ActivityLogger.Tests.csproj", "{11C7FCE5-99AC-404B-BF1B-52783C6918E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityLogger.Gui", "ActivityLogger.GUI\ActivityLogger.Gui.csproj", "{66F37294-A36A-4B11-B454-A8AD2C9C014E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityLogger.Gui", "ActivityLogger.Gui\ActivityLogger.Gui.csproj", "{66F37294-A36A-4B11-B454-A8AD2C9C014E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
