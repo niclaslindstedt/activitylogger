@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AL.Core.Utilities;
 using SettingsCollection = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, object>>;
 
-namespace ActivityLogger.Core
+namespace AL.Core
 {
     public class Settings
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ActivityLogger.Core.Services
+namespace AL.Core.Loggers
 {
-    public abstract class ActivityLogger<TType> : IObservable<TType>, IDisposable
+    public abstract class Logger<TType> : IObservable<TType>, IDisposable
     {
         protected IObserver<TType> Observer;
         
@@ -16,5 +16,7 @@ namespace ActivityLogger.Core.Services
         public virtual void Dispose()
         {
         }
+
+        public abstract void Log();
     }
 }

@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityLogger.Core", "Acti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityLogger.Tests", "ActivityLogger.Tests\ActivityLogger.Tests.csproj", "{11C7FCE5-99AC-404B-BF1B-52783C6918E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityLogger.GUI", "ActivityLogger.GUI\ActivityLogger.GUI.csproj", "{66F37294-A36A-4B11-B454-A8AD2C9C014E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityLogger.Gui", "ActivityLogger.GUI\ActivityLogger.Gui.csproj", "{66F37294-A36A-4B11-B454-A8AD2C9C014E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

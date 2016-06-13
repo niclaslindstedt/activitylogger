@@ -1,4 +1,4 @@
-﻿namespace ActivityLogger.Core.Constants
+﻿namespace AL.Core.Constants
 {
     public enum ActivityType
     {

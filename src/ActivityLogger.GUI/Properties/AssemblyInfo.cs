@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ActivityLogger.GUI")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Activity Logger")]
+[assembly: AssemblyDescription("An activity logger that tracks activity in various processes.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ActivityLogger.GUI")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCompany("Agilator AB")]
+[assembly: AssemblyProduct("Activity Logger")]
+[assembly: AssemblyCopyright("Copyright © Niclas Lindstedt 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

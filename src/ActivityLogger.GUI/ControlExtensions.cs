@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Windows.Forms;
 
-namespace ActivityLogger.GUI
+namespace AL.Gui
 {
     public static class ControlExtensions
     {

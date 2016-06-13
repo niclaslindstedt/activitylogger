@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ActivityLogger.Core
+﻿namespace AL.Core.Reporters
 {
     public interface ITimeReporter
     {

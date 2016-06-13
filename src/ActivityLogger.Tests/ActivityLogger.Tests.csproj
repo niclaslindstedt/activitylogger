@@ -90,7 +90,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="ProcessFinderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

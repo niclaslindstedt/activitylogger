@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ActivityLogger.Core
+namespace AL.Core.Utilities
 {
     public interface ISettingsReader
     {

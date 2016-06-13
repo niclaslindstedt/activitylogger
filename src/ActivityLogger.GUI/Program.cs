@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
-using ActivityLogger.Core;
+using AL.Core;
+using AL.Core.Utilities;
 
-namespace ActivityLogger.GUI
+namespace AL.Gui
 {
     internal static class Program
     {
@@ -17,9 +18,9 @@ namespace ActivityLogger.GUI
             Settings = new Settings(new SettingsReader("ActivityLogger.ini"));
 
             var applicationWindow = new ActivityLoggerWindow();
-            var reportCentral = new ReportCentral(applicationWindow);
+            var reportCentral = new ReportCentral(applicationWindow, Settings);
 
-            reportCentral.StartThread();
+            reportCentral.StartReporterThread();
 
             Application.Run(applicationWindow);
         }

@@ -7,7 +7,7 @@
     <ProjectGuid>{9E25255A-562F-40DC-ACBE-2F9DDA196963}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ActivityLogger.Core</RootNamespace>
+    <RootNamespace>AL.Core</RootNamespace>
     <AssemblyName>ActivityLogger.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -54,7 +54,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
@@ -109,24 +109,41 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\ActivityType.cs" />
-    <Compile Include="ISettingsReader.cs" />
-    <Compile Include="ITimeLogger.cs" />
-    <Compile Include="ITimeReceiver.cs" />
-    <Compile Include="ITimeReporter.cs" />
-    <Compile Include="Services\ActivityLogger.cs" />
-    <Compile Include="Services\ActivityReporter.cs" />
-    <Compile Include="Services\IActivityReporter.cs" />
-    <Compile Include="Services\IProcessService.cs" />
-    <Compile Include="Services\MouseLogger.cs" />
-    <Compile Include="Services\KeyLogger.cs" />
-    <Compile Include="Services\KeyReporter.cs" />
-    <Compile Include="Services\MouseReporter.cs" />
-    <Compile Include="Services\ProcessService.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Interfaces\IActivityTypeReceiver.cs" />
+    <Compile Include="Interfaces\IActivityReceiver.cs" />
+    <Compile Include="Interfaces\IKeyReceiver.cs" />
+    <Compile Include="Interfaces\IMouseReceiver.cs" />
+    <Compile Include="Interfaces\IProcessReceiver.cs" />
+    <Compile Include="Loggers\ActivityTypeLogger.cs" />
+    <Compile Include="Loggers\IActivityTypeLogger.cs" />
+    <Compile Include="Loggers\ProcessLogger.cs" />
+    <Compile Include="Models\IInputActivityReport.cs" />
+    <Compile Include="Models\KeyReport.cs" />
+    <Compile Include="Models\ProcessReport.cs" />
+    <Compile Include="Models\MouseReport.cs" />
+    <Compile Include="ReportCentral.cs" />
+    <Compile Include="Reporters\ActivityReporter.cs" />
+    <Compile Include="Reporters\ActivityTypeReporter.cs" />
+    <Compile Include="Reporters\Reporter.cs" />
+    <Compile Include="Reporters\ProcessReporter.cs" />
+    <Compile Include="Utilities\ISettingsReader.cs" />
+    <Compile Include="Interfaces\ITimeReceiver.cs" />
+    <Compile Include="Reporters\ITimeReporter.cs" />
+    <Compile Include="Loggers\Logger.cs" />
+    <Compile Include="Loggers\ActivityLogger.cs" />
+    <Compile Include="Loggers\MouseLogger.cs" />
+    <Compile Include="Loggers\KeyLogger.cs" />
+    <Compile Include="Reporters\KeyReporter.cs" />
+    <Compile Include="Reporters\MouseReporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SettingsReader.cs" />
+    <Compile Include="Utilities\NativeMethods.cs" />
+    <Compile Include="Utilities\SettingsReader.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="TimeLogger.cs" />
-    <Compile Include="TimeReporter.cs" />
+    <Compile Include="Loggers\TimeLogger.cs" />
+    <Compile Include="Models\TimeReport.cs" />
+    <Compile Include="Models\ActivityReport.cs" />
+    <Compile Include="Reporters\TimeReporter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

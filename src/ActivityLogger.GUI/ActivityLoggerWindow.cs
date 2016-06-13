@@ -1,32 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using System.Windows.Forms;
-using ActivityLogger.Core;
-using ActivityLogger.Core.Constants;
+using AL.Core.Interfaces;
+using AL.Core.Models;
 
-namespace ActivityLogger.GUI
+namespace AL.Gui
 {
-    public partial class ActivityLoggerWindow : Form, ITimeReceiver
+    public partial class ActivityLoggerWindow : Form, IActivityReceiver
     {
         public ActivityLoggerWindow()
         {
             InitializeComponent();
         }
 
-        public void ReportTime(Tuple<string, ActivityType, int> timeReport)
+        public void ReportActivity(ActivityReport activityReport)
         {
-            var processName = timeReport.Item1;
-            var activityType = timeReport.Item2;
-            var seconds = timeReport.Item3;
-            var elapsed = TimeSpan.FromSeconds(seconds);
+            progressBarActiveTime.SetPropertyThreadSafe("Value", activityReport.PercentOfWorkDay);
 
-            labelActiveTimeValue.SetPropertyThreadSafe("Text", elapsed.ToString("g"));
+            if (activityReport.UserIsWorking)
+            {
+                labelActiveTimeValue.SetPropertyThreadSafe("Text", activityReport.ElapsedProcessTimeString);
+                labelActiveProcessValue.SetPropertyThreadSafe("Text", $"{activityReport.ProcessDescription} (Work)");
+
+                labelActiveTime.SetPropertyThreadSafe("ForeColor", Color.DarkGreen);
+                labelProgress.SetPropertyThreadSafe("ForeColor", Color.DarkGreen);
+                labelActiveProcess.SetPropertyThreadSafe("ForeColor", Color.DarkGreen);
+            }
+            else
+            {
+                if (activityReport.UserIsActive)
+                {
+                    labelActiveProcessValue.SetPropertyThreadSafe("Text", $"{activityReport.ProcessDescription} (Leisure)");
+                    labelActiveTimeValue.SetPropertyThreadSafe("Text", activityReport.ElapsedNonWorkTimeString);
+                }
+                else
+                {
+                    labelActiveProcessValue.SetPropertyThreadSafe("Text", $"{activityReport.ProcessDescription} (Idle)");
+                    labelActiveTimeValue.SetPropertyThreadSafe("Text", activityReport.ElapsedIdleTimeString);
+                }
+
+
+                labelActiveProcessValue.SetPropertyThreadSafe("Text", activityReport.ProcessName);
+
+                labelActiveTime.SetPropertyThreadSafe("ForeColor", Color.DarkRed);
+                labelProgress.SetPropertyThreadSafe("ForeColor", Color.DarkRed);
+                labelActiveProcess.SetPropertyThreadSafe("ForeColor", Color.DarkRed);
+            }
         }
     }
 }
