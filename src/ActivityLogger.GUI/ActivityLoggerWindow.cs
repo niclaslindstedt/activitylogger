@@ -49,9 +49,6 @@ namespace AL.Gui
                     labelActiveTimeValue.SetPropertyThreadSafe("Text", activityReport.ElapsedIdleTimeString);
                 }
 
-
-                labelActiveProcessValue.SetPropertyThreadSafe("Text", activityReport.ProcessName);
-
                 labelActiveTime.SetPropertyThreadSafe("ForeColor", Color.DarkRed);
                 labelProgress.SetPropertyThreadSafe("ForeColor", Color.DarkRed);
                 labelActiveProcess.SetPropertyThreadSafe("ForeColor", Color.DarkRed);

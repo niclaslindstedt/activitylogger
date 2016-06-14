@@ -16,6 +16,7 @@ namespace AL.Core.Loggers
         private readonly Dictionary<string, string> _processMatches = new Dictionary<string, string>();
 
         private bool _userIsActive;
+        private DateTime _lastActivity = DateTime.Now;
 
         public ActivityTypeLogger(Settings settings)
         {
@@ -26,10 +27,14 @@ namespace AL.Core.Loggers
         {
             if (inputActivityReports != null && inputActivityReports.Any())
             {
-                var reports = inputActivityReports.Where(x => x != null);
-                _userIsActive = reports.Any(x =>
-                    (DateTime.Now - x.LastActivity).Seconds <= _settings.SecondsBeforeConsideredIdle);
+                var reports = inputActivityReports.Where(x => x != null)
+                    .OrderByDescending(x => x.LastActivity).ToList();
+
+                if (reports.Any())
+                    _lastActivity = reports.First().LastActivity;
             }
+
+            _userIsActive = (DateTime.Now - _lastActivity).Seconds <= _settings.SecondsBeforeConsideredIdle;
 
             _processReport = processReport;
         }
@@ -44,14 +49,14 @@ namespace AL.Core.Loggers
                 _settings.WorkProcesses, _settings.AllowedIdleSecondsForWork);
             if (workProcess != null)
             {
-                activityType = ActivityType.Work;
+                activityType = _userIsActive ? ActivityType.Work : ActivityType.None;
             }
             else
             {
                 var workRelatedProcess = GetActiveProcessFromList(
                     _settings.WorkRelatedProcesses, _settings.AllowedIdleSecondsForWorkRelated);
                 if (workRelatedProcess != null)
-                    activityType = ActivityType.WorkRelated;
+                    activityType = _userIsActive ? ActivityType.WorkRelated : ActivityType.None;
                 else
                     activityType = _userIsActive ? ActivityType.NonWorkRelated : ActivityType.None;
             }
