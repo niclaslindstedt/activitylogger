@@ -60,6 +60,7 @@ namespace AL.Core.Models
 
             public DateTime Started { get; }
             public string ProcessName { get; set; }
+            public string ProcessDescription { get; set; }
             public int Seconds { get; set; }
 
             public TimeSpan Elapsed => TimeSpan.FromSeconds(Seconds);

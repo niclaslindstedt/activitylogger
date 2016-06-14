@@ -3,25 +3,28 @@ using System.Threading.Tasks;
 using AL.Core.Interfaces;
 using AL.Core.Loggers;
 using AL.Core.Reporters;
+using AL.Core.Utilities;
 
 namespace AL.Core
 {
     public class ReportCentral
     {
         private readonly IActivityReceiver _activityReceiver;
-        private readonly Settings _settings;
+        private readonly ILogReceiver _logReceiver;
 
-        public ReportCentral(IActivityReceiver activityReceiver, Settings settings)
+        public ReportCentral(IActivityReceiver activityReceiver, ILogReceiver logReceiver)
         {
             _activityReceiver = activityReceiver;
-            _settings = settings;
+            _logReceiver = logReceiver;
         }
 
         public void StartReporterThread()
         {
             Task.Factory.StartNew(() =>
             {
-                var activityLogger = new ActivityLogger();
+                var settings = new Settings(new SettingsReader("ActivityLogger.ini"));
+
+                var activityLogger = new ActivityLogger(_logReceiver);
                 var activityReporter = new ActivityReporter(_activityReceiver);
                 activityReporter.Subscribe(activityLogger);
 
@@ -41,7 +44,7 @@ namespace AL.Core
                 var timeReporter = new TimeReporter(activityLogger);
                 timeReporter.Subscribe(timeLogger);
 
-                var activityTypeLogger = new ActivityTypeLogger(_settings);
+                var activityTypeLogger = new ActivityTypeLogger(settings);
                 var activityTypeReporter = new ActivityTypeReporter(activityLogger);
                 activityTypeReporter.Subscribe(activityTypeLogger);
 

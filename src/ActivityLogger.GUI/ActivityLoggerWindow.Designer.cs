@@ -34,6 +34,14 @@
             this.labelActiveProcessValue = new System.Windows.Forms.Label();
             this.labelActiveTime = new System.Windows.Forms.Label();
             this.labelActiveTimeValue = new System.Windows.Forms.Label();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabProcesses = new System.Windows.Forms.TabPage();
+            this.tabLog = new System.Windows.Forms.TabPage();
+            this.textBoxProcesses = new System.Windows.Forms.TextBox();
+            this.textBoxLog = new System.Windows.Forms.TextBox();
+            this.tabControl1.SuspendLayout();
+            this.tabProcesses.SuspendLayout();
+            this.tabLog.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelProgress
@@ -87,11 +95,64 @@
             this.labelActiveTimeValue.Size = new System.Drawing.Size(0, 13);
             this.labelActiveTimeValue.TabIndex = 7;
             // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabProcesses);
+            this.tabControl1.Controls.Add(this.tabLog);
+            this.tabControl1.Location = new System.Drawing.Point(15, 95);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(416, 154);
+            this.tabControl1.TabIndex = 8;
+            // 
+            // tabProcesses
+            // 
+            this.tabProcesses.Controls.Add(this.textBoxProcesses);
+            this.tabProcesses.Location = new System.Drawing.Point(4, 22);
+            this.tabProcesses.Name = "tabProcesses";
+            this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
+            this.tabProcesses.Size = new System.Drawing.Size(408, 128);
+            this.tabProcesses.TabIndex = 0;
+            this.tabProcesses.Text = "Processes";
+            this.tabProcesses.UseVisualStyleBackColor = true;
+            // 
+            // tabLog
+            // 
+            this.tabLog.Controls.Add(this.textBoxLog);
+            this.tabLog.Location = new System.Drawing.Point(4, 22);
+            this.tabLog.Name = "tabLog";
+            this.tabLog.Padding = new System.Windows.Forms.Padding(3);
+            this.tabLog.Size = new System.Drawing.Size(408, 128);
+            this.tabLog.TabIndex = 1;
+            this.tabLog.Text = "Log";
+            this.tabLog.UseVisualStyleBackColor = true;
+            // 
+            // textBoxProcesses
+            // 
+            this.textBoxProcesses.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBoxProcesses.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxProcesses.Location = new System.Drawing.Point(7, 4);
+            this.textBoxProcesses.Multiline = true;
+            this.textBoxProcesses.Name = "textBoxProcesses";
+            this.textBoxProcesses.Size = new System.Drawing.Size(395, 118);
+            this.textBoxProcesses.TabIndex = 0;
+            // 
+            // textBoxLog
+            // 
+            this.textBoxLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBoxLog.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxLog.Location = new System.Drawing.Point(7, 4);
+            this.textBoxLog.Multiline = true;
+            this.textBoxLog.Name = "textBoxLog";
+            this.textBoxLog.Size = new System.Drawing.Size(395, 118);
+            this.textBoxLog.TabIndex = 0;
+            // 
             // ActivityLoggerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(443, 261);
+            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.labelActiveTimeValue);
             this.Controls.Add(this.labelActiveTime);
             this.Controls.Add(this.labelActiveProcessValue);
@@ -103,6 +164,11 @@
             this.Name = "ActivityLoggerWindow";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Activity Logger (c) Niclas Lindstedt";
+            this.tabControl1.ResumeLayout(false);
+            this.tabProcesses.ResumeLayout(false);
+            this.tabProcesses.PerformLayout();
+            this.tabLog.ResumeLayout(false);
+            this.tabLog.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -116,6 +182,11 @@
         private System.Windows.Forms.Label labelActiveProcessValue;
         private System.Windows.Forms.Label labelActiveTime;
         private System.Windows.Forms.Label labelActiveTimeValue;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabProcesses;
+        private System.Windows.Forms.TabPage tabLog;
+        private System.Windows.Forms.TextBox textBoxProcesses;
+        private System.Windows.Forms.TextBox textBoxLog;
     }
 }
 

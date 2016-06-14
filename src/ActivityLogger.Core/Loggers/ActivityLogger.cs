@@ -18,10 +18,18 @@ namespace AL.Core.Loggers
         IActivityTypeReceiver
     {
         private readonly ActivityReport _activityReport = new ActivityReport();
-        
+
+        private readonly ILogReceiver _logReceiver;
+
         private bool _processReported;
         private bool _timeReported;
         private bool _activityTypeReported;
+        private ActivityType _currentActivity;
+
+        public ActivityLogger(ILogReceiver logReceiver = null)
+        {
+            _logReceiver = logReceiver;
+        }
 
         public override void Log()
         {
@@ -30,6 +38,7 @@ namespace AL.Core.Loggers
 
             if (_processReported && _timeReported & _activityTypeReported)
             {
+                LogChangeInActivityType();
                 ReportProcessWorkTime();
                 Observer.OnNext(_activityReport);
             }
@@ -39,25 +48,66 @@ namespace AL.Core.Loggers
             }
         }
 
+        private void LogChangeInActivityType()
+        {
+            if (_logReceiver == null)
+                return;
+
+            var newActivity = _activityReport.ActivityType;
+            if (newActivity != _currentActivity)
+            {
+                var logMessage = string.Empty;
+                if (_currentActivity == ActivityType.None)
+                {
+                    logMessage += "User became active ";
+                    if (newActivity == ActivityType.Work || newActivity == ActivityType.WorkRelated)
+                        logMessage += "and started working.";
+                    else
+                        logMessage += "and started chilling.";
+                }
+                else if (_currentActivity == ActivityType.NonWorkRelated)
+                {
+                    logMessage += "User stopped chilling ";
+                    if (newActivity == ActivityType.Work || newActivity == ActivityType.WorkRelated)
+                        logMessage += "and started working.";
+                    else
+                        logMessage += "and became idle.";
+                }
+                else if (_currentActivity == ActivityType.Work || _currentActivity == ActivityType.WorkRelated)
+                {
+                    if (newActivity != ActivityType.Work && newActivity != ActivityType.WorkRelated)
+                    {
+                        logMessage += "User stopped working ";
+                        if (newActivity == ActivityType.None)
+                            logMessage += "and became idle.";
+                        else
+                            logMessage += "and started chilling.";
+                    }
+                }
+                if (logMessage != string.Empty)
+                    _logReceiver.Log(logMessage);
+            }
+
+            _currentActivity = _activityReport.ActivityType;
+        }
+
         private void ReportProcessWorkTime()
         {
-            var processName = _activityReport.ProcessName;
             var activityType = _activityReport.ActivityType;
-            var seconds = _activityReport.TimeSinceLastReport;
 
             switch (activityType)
             {
                 case ActivityType.Work:
                 case ActivityType.WorkRelated:
-                    AddProcessTimeToList(_activityReport.WorkActivities, processName, seconds);
+                    AddProcessTimeToList(_activityReport.WorkActivities, _activityReport);
                     break;
 
                 case ActivityType.NonWorkRelated:
-                    AddProcessTimeToList(_activityReport.NonWorkActivities, processName, seconds);
+                    AddProcessTimeToList(_activityReport.NonWorkActivities, _activityReport);
                     break;
 
                 case ActivityType.None:
-                    AddProcessTimeToList(_activityReport.IdlingActivities, processName, seconds);
+                    AddProcessTimeToList(_activityReport.IdlingActivities, _activityReport);
                     break;
 
                 default:
@@ -65,8 +115,12 @@ namespace AL.Core.Loggers
             }
         }
 
-        private void AddProcessTimeToList(ICollection<Activity> activities, string processName, int seconds)
+        private void AddProcessTimeToList(ICollection<Activity> activities, ActivityReport activityReport)
         {
+            var processName = _activityReport.ProcessName;
+            var processDescription = _activityReport.ProcessDescription;
+            var seconds = _activityReport.TimeSinceLastReport;
+
             var activity = activities.FirstOrDefault(x => x.ProcessName == processName);
             if (activity != null)
                 activity.Seconds += seconds;
@@ -74,6 +128,7 @@ namespace AL.Core.Loggers
                 activities.Add(new Activity
                 {
                     ProcessName = processName,
+                    ProcessDescription = processDescription,
                     Seconds = seconds
                 });
         }
