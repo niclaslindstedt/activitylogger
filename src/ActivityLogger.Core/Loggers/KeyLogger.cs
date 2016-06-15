@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AL.Core.Models;
 using AL.Core.Utilities;
+using LowLevelKeyboardProc = AL.Core.Utilities.NativeMethods.LowLevelKeyboardProc;
 
 namespace AL.Core.Loggers
 {
@@ -18,7 +19,7 @@ namespace AL.Core.Loggers
         private const int WH_KEYBOARD_LL = 13;
         private const int WM_KEYDOWN = 0x0100;
 
-        private static readonly NativeMethods.LowLevelKeyboardProc Proc = HookCallback;
+        private static readonly LowLevelKeyboardProc Proc = HookCallback;
 
         private static IntPtr _hookId = IntPtr.Zero;
         
@@ -38,15 +39,12 @@ namespace AL.Core.Loggers
         {
             var keyReport = new KeyReport
             {
-                KeyStrokes = _keyStrokes
+                TotalKeyStrokes = ++_keyStrokes,
+                KeyStrokes = 1,
+                LatestActivity = DateTime.Now
             };
 
             Observer.OnNext(keyReport);
-        }
-
-        private void ReportKey(Keys vkCode)
-        {
-            _keyStrokes++;
         }
         
         private static IntPtr SetHook(NativeMethods.LowLevelKeyboardProc proc)
@@ -64,8 +62,7 @@ namespace AL.Core.Loggers
         {
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
             {
-                var vkCode = Marshal.ReadInt32(lParam);
-                Instance().ReportKey((Keys)vkCode);
+                Instance().Log();
             }
 
             return NativeMethods.CallNextHookEx(_hookId, nCode, wParam, lParam);

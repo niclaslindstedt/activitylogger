@@ -12,7 +12,10 @@ namespace AL.Gui
     {
         private string _logWindowContent;
         private string _processWindowContent;
+
         private readonly IDictionary<string, IDictionary<string, TimeSpan>> _processTimes;
+
+        private ActivityReport _activityReport;
 
         public ActivityLoggerWindow()
         {
@@ -25,6 +28,8 @@ namespace AL.Gui
         
         public void ReportActivity(ActivityReport activityReport)
         {
+            _activityReport = activityReport;
+
             progressBarActiveTime.SetPropertyThreadSafe("Value", activityReport.PercentOfWorkDay());
 
             if (activityReport.UserIsActive)
@@ -55,7 +60,7 @@ namespace AL.Gui
                     continue;
 
                 var totalTime = activityReport.ElapsedActivityTimeString(sectionName);
-                _processWindowContent += $"=== [{totalTime}] {sectionName.ToUpperInvariant()} ===" + Environment.NewLine;
+                _processWindowContent += $"=== [{totalTime}] [{sectionName.ToUpperInvariant()} ===" + Environment.NewLine;
 
                 if (!_processTimes.ContainsKey(sectionName))
                     _processTimes.Add(sectionName, new Dictionary<string, TimeSpan>());
@@ -85,12 +90,14 @@ namespace AL.Gui
         private void UpdateProcess(string section)
         {
             var orderedList = _processTimes[section].OrderByDescending(x => x.Value);
+            var activities = _activityReport.SectionActivities[section];
             for (var i = 0; i < orderedList.Count(); ++i)
             {
                 var rank = (i + 1).ToString();
                 var processDescription = orderedList.ElementAt(i).Key;
+                var activity = activities.First(x => x.ProcessDescription == processDescription);
                 var processTime = orderedList.ElementAt(i).Value.ToString("g");
-                _processWindowContent += $"#{rank.PadRight(2)} [{processTime}] {processDescription}" + Environment.NewLine;
+                _processWindowContent += $"#{rank.PadRight(2)} [{processTime}] [{activity.Clicks}] {processDescription}" + Environment.NewLine;
             }
         }
     }

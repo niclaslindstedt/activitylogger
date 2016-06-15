@@ -22,12 +22,14 @@ namespace AL.Core.Loggers
             {
                 var distanceX = Math.Abs(_lastPoint.X - point.X);
                 var distanceY = Math.Abs(_lastPoint.Y - point.Y);
-                _distance += Math.Sqrt(distanceX*distanceX + distanceY*distanceY);
+                var dDistance = Math.Sqrt(distanceX * distanceX + distanceY * distanceY);
+                _distance += dDistance;
                 _lastPoint = point;
 
                 var mouseReport = new MouseReport
                 {
-                    Distance = _distance
+                    TotalDistance = _distance,
+                    Distance = dDistance
                 };
 
                 Observer.OnNext(mouseReport);
