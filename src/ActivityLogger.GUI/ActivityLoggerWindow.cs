@@ -12,25 +12,24 @@ namespace AL.Gui
     {
         private string _logWindowContent;
         private string _processWindowContent;
-        private readonly Dictionary<string, TimeSpan> _processTimes;
+        private readonly IDictionary<string, IDictionary<string, TimeSpan>> _processTimes;
 
         public ActivityLoggerWindow()
         {
             InitializeComponent();
 
-            _processTimes = new Dictionary<string, TimeSpan>();
+            _processTimes = new Dictionary<string, IDictionary<string, TimeSpan>>();
             
             LogMessage("Activity Logger initialized");
         }
         
         public void ReportActivity(ActivityReport activityReport)
         {
-            progressBarActiveTime.SetPropertyThreadSafe("Value", activityReport.PercentOfWorkDay);
+            progressBarActiveTime.SetPropertyThreadSafe("Value", activityReport.PercentOfWorkDay());
 
-            if (activityReport.UserIsWorking)
+            if (activityReport.UserIsActive)
             {
-                labelActiveTimeValue.SetPropertyThreadSafe("Text", activityReport.ElapsedProcessTimeString);
-                labelActiveProcessValue.SetPropertyThreadSafe("Text", $"{activityReport.ProcessDescription} (Work)");
+                labelActiveProcessValue.SetPropertyThreadSafe("Text", $"{activityReport.ProcessDescription} ({activityReport.ActivityType})");
 
                 labelActiveTime.SetPropertyThreadSafe("ForeColor", Color.DarkGreen);
                 labelProgress.SetPropertyThreadSafe("ForeColor", Color.DarkGreen);
@@ -38,27 +37,37 @@ namespace AL.Gui
             }
             else
             {
-                if (activityReport.UserIsActive)
-                {
-                    labelActiveProcessValue.SetPropertyThreadSafe("Text", $"{activityReport.ProcessDescription} (Leisure)");
-                    labelActiveTimeValue.SetPropertyThreadSafe("Text", activityReport.ElapsedNonWorkTimeString);
-                }
-                else
-                {
-                    labelActiveProcessValue.SetPropertyThreadSafe("Text", $"{activityReport.ProcessDescription} (Idle)");
-                    labelActiveTimeValue.SetPropertyThreadSafe("Text", activityReport.ElapsedIdleTimeString);
-                }
+                labelActiveProcessValue.SetPropertyThreadSafe("Text", $"{activityReport.ProcessDescription} (Idle)");
 
                 labelActiveTime.SetPropertyThreadSafe("ForeColor", Color.DarkRed);
                 labelProgress.SetPropertyThreadSafe("ForeColor", Color.DarkRed);
                 labelActiveProcess.SetPropertyThreadSafe("ForeColor", Color.DarkRed);
             }
+            labelActiveTimeValue.SetPropertyThreadSafe("Text", activityReport.ElapsedCurrentActivityTimeString);
 
-
-            foreach (var activity in activityReport.WorkActivities)
+            _processWindowContent = string.Empty;
+            foreach (var section in activityReport.SectionActivities)
             {
-                UpdateProcess(activity.ProcessDescription, activity.Elapsed);
+                var sectionName = section.Key;
+                var processes = section.Value;
+
+                if (sectionName == string.Empty)
+                    continue;
+
+                var totalTime = activityReport.ElapsedActivityTimeString(sectionName);
+                _processWindowContent += $"=== [{totalTime}] {sectionName.ToUpperInvariant()} ===" + Environment.NewLine;
+
+                if (!_processTimes.ContainsKey(sectionName))
+                    _processTimes.Add(sectionName, new Dictionary<string, TimeSpan>());
+
+                foreach (var activity in processes)
+                {
+                    _processTimes[sectionName][activity.ProcessDescription] = activity.Elapsed;
+                }
+
+                UpdateProcess(sectionName);
             }
+
             textBoxProcesses.SetPropertyThreadSafe("Text", _processWindowContent);
         }
 
@@ -73,18 +82,15 @@ namespace AL.Gui
             textBoxLog.SetPropertyThreadSafe("Text", _logWindowContent);
         }
 
-        private void UpdateProcess(string processName, TimeSpan timeSpan)
+        private void UpdateProcess(string section)
         {
-            _processTimes[processName] = timeSpan;
-
-            _processWindowContent = string.Empty;
-            var orderedList = _processTimes.OrderByDescending(x => x.Value);
+            var orderedList = _processTimes[section].OrderByDescending(x => x.Value);
             for (var i = 0; i < orderedList.Count(); ++i)
             {
-                var rank = i + 1;
+                var rank = (i + 1).ToString();
                 var processDescription = orderedList.ElementAt(i).Key;
                 var processTime = orderedList.ElementAt(i).Value.ToString("g");
-                _processWindowContent += $"#{rank} [{processTime}] {processDescription}" + Environment.NewLine;
+                _processWindowContent += $"#{rank.PadRight(2)} [{processTime}] {processDescription}" + Environment.NewLine;
             }
         }
     }

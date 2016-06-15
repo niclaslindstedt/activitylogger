@@ -42,26 +42,23 @@ namespace AL.Core.Utilities
             _iniParser.WriteFile(settingsFilename, data);
         }
 
-        public Dictionary<string, object> GetSection(string sectionName)
+        public IDictionary<string, string> GetSection(string sectionName)
         {
             var data = _iniParser.ReadFile(_fileName);
             var sectionData = GetSectionData(data, sectionName);
 
-            return sectionData.Keys.ToDictionary<KeyData, string, object>(s => s.KeyName, s => s.Value);
+            return sectionData.Keys.ToDictionary(s => s.KeyName, s => s.Value);
         }
 
-        public bool GetSettingAsBool(string sectionName, string settingName, object defaultValue)
+        public bool GetSettingAsBool(string sectionName, string settingName, string defaultValue)
             => bool.Parse(GetSetting(sectionName, settingName, defaultValue));
 
-        public int GetSettingAsInt(string sectionName, string settingName, object defaultValue)
+        public int GetSettingAsInt(string sectionName, string settingName, string defaultValue)
             => int.Parse(GetSetting(sectionName, settingName, defaultValue));
 
-        public float GetSettingAsFloat(string sectionName, string settingName, object defaultValue)
+        public float GetSettingAsFloat(string sectionName, string settingName, string defaultValue)
             => float.Parse(GetSetting(sectionName, settingName, defaultValue));
-
-        public string GetSettingAsString(string sectionName, string settingName, object defaultValue)
-            => GetSetting(sectionName, settingName, defaultValue);
-
+        
         public void WriteSetting(string sectionName, string settingName, string value)
         {
             var data = _iniParser.ReadFile(_fileName);
@@ -70,7 +67,7 @@ namespace AL.Core.Utilities
             _iniParser.WriteFile(_fileName, data);
         }
 
-        private string GetSetting(string sectionName, string settingName, object defaultValue)
+        private string GetSetting(string sectionName, string settingName, string defaultValue)
         {
             var data = _iniParser.ReadFile(_fileName);
             var setting = GetSettingData(data, sectionName, settingName, defaultValue);
@@ -78,13 +75,13 @@ namespace AL.Core.Utilities
             return setting.Value;
         }
 
-        private KeyData GetSettingData(IniData data, string sectionName, string settingName, object defaultValue)
+        private KeyData GetSettingData(IniData data, string sectionName, string settingName, string defaultValue)
         {
             var sectionData = GetSectionData(data, sectionName);
             var keyData = sectionData.Keys.GetKeyData(settingName);
             if (keyData == null)
             {
-                sectionData.Keys.AddKey(settingName, defaultValue.ToString());
+                sectionData.Keys.AddKey(settingName, defaultValue);
                 _iniParser.WriteFile(_fileName, data);
                 keyData = sectionData.Keys.GetKeyData(settingName);
             }

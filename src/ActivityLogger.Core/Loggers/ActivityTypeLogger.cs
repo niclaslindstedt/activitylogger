@@ -7,16 +7,18 @@ using AL.Core.Models;
 
 namespace AL.Core.Loggers
 {
-    public class ActivityTypeLogger : Logger<ActivityType>, IActivityTypeLogger
+    public class ActivityTypeLogger : Logger<ActivityTypeReport>, IActivityTypeLogger
     {
         private readonly Settings _settings;
         private ProcessReport _processReport;
 
-        private readonly Dictionary<string, DateTime> _lastWorkActivity = new Dictionary<string, DateTime>();
-        private readonly Dictionary<string, string> _processMatches = new Dictionary<string, string>();
+        private readonly IDictionary<string, IDictionary<string, DateTime>> _latestProcessActivity = new Dictionary<string, IDictionary<string, DateTime>>();
+        private readonly IDictionary<string, IDictionary<string, string>> _processMatches = new Dictionary<string, IDictionary<string, string>>();
 
         private bool _userIsActive;
-        private DateTime _lastActivity = DateTime.Now;
+        private bool _userIsIdle;
+        private DateTime _latestActivity = DateTime.Now;
+        private string _activeSection = string.Empty;
 
         public ActivityTypeLogger(Settings settings)
         {
@@ -28,72 +30,87 @@ namespace AL.Core.Loggers
             if (inputActivityReports != null && inputActivityReports.Any())
             {
                 var reports = inputActivityReports.Where(x => x != null)
-                    .OrderByDescending(x => x.LastActivity).ToList();
+                    .OrderBy(x => x.LatestActivity).ToList();
 
                 if (reports.Any())
-                    _lastActivity = reports.First().LastActivity;
+                    _latestActivity = reports.Last().LatestActivity;
             }
-
-            _userIsActive = (DateTime.Now - _lastActivity).Seconds <= _settings.SecondsBeforeConsideredIdle;
-
+            
             _processReport = processReport;
         }
 
         public override void Log()
         {
-            ActivityType activityType;
+            var activityType = string.Empty;
 
-            // Try getting active processes with the allowed idle seconds for
-            // work processes (grace time before considered idle).
-            var workProcess = GetActiveProcessFromList(
-                _settings.WorkProcesses, _settings.AllowedIdleSecondsForWork);
-            if (workProcess != null)
+            var sections = _settings.Sections;
+            foreach (var section in sections)
             {
-                activityType = _userIsActive ? ActivityType.Work : ActivityType.None;
-            }
-            else
-            {
-                var workRelatedProcess = GetActiveProcessFromList(
-                    _settings.WorkRelatedProcesses, _settings.AllowedIdleSecondsForWorkRelated);
-                if (workRelatedProcess != null)
-                    activityType = _userIsActive ? ActivityType.WorkRelated : ActivityType.None;
-                else
-                    activityType = _userIsActive ? ActivityType.NonWorkRelated : ActivityType.None;
-            }
+                var idleSeconds = _settings.GetActivitySettingAsInt(section, SettingStrings.SecondsBeforeConsideredIdle);
 
-            Observer.OnNext(activityType);
+                if (!_processMatches.ContainsKey(section))
+                    _processMatches[section] = new Dictionary<string, string>();
+
+                if (!_latestProcessActivity.ContainsKey(section))
+                    _latestProcessActivity[section] = new Dictionary<string, DateTime>();
+
+                var process = GetActiveProcessFromList(section, _settings.SectionActivities[section], idleSeconds);
+                
+                if (process != null)
+                {
+                    _activeSection = section;
+                    activityType = section;
+                    _userIsActive = true;
+                    _userIsIdle = (DateTime.Now - _latestActivity).Seconds >= idleSeconds;
+                }
+            }
+            
+            var activityTypeReport = new ActivityTypeReport
+            {
+                ActivityType = activityType,
+                ActivityHourGoal = _settings.GetActivitySettingAsFloat(activityType, SettingStrings.DailyHourGoal),
+                UserIsActive = !_userIsIdle && _userIsActive,
+                UserIsIdle = _userIsIdle
+            };
+
+            Observer.OnNext(activityTypeReport);
         }
 
-        private string GetActiveProcessFromList(IEnumerable<string> matchStrings, int allowedIdleSeconds)
+        private string GetActiveProcessFromList(string section, IEnumerable<string> matchStrings, int allowedIdleSeconds)
         {
-            var matchString = matchStrings.FirstOrDefault(x => IsProcessActive(x, allowedIdleSeconds));
+            var matchString = matchStrings.FirstOrDefault(x => IsProcessActive(section, x, allowedIdleSeconds));
             if (matchString == null)
                 return null;
 
-            return _processMatches[matchString];
+            return _processMatches[section][matchString];
         }
 
-        private bool IsProcessActive(string matchString, int allowedIdleSeconds)
+        private bool IsProcessActive(string section, string matchString, int allowedIdleSeconds)
         {
-            if (IsMatchToCurrentProcess(matchString))
+            if (IsMatchToCurrentProcess(section, matchString))
             {
-                _lastWorkActivity[matchString] = DateTime.Now;
+                _latestProcessActivity[section][matchString] = DateTime.Now;
                 return true;
             }
 
-            if (!_lastWorkActivity.ContainsKey(matchString))
+            if (_activeSection == string.Empty)
                 return false;
 
-            return (DateTime.Now - _lastWorkActivity[matchString]) < TimeSpan.FromSeconds(allowedIdleSeconds);
+            if (!_latestProcessActivity[_activeSection].ContainsKey(matchString))
+                return false;
+
+            _userIsActive = (DateTime.Now - _latestProcessActivity[_activeSection][matchString]) < TimeSpan.FromSeconds(allowedIdleSeconds);
+
+            return _userIsActive;
         }
 
-        private bool IsMatchToCurrentProcess(string matchString)
+        private bool IsMatchToCurrentProcess(string section, string matchString)
         {
             var regex = new Regex(matchString);
             if (_processReport.Name == matchString || regex.IsMatch(_processReport.WindowTitle) || regex.IsMatch(_processReport.Description))
             {
-                if (!_processMatches.ContainsKey(matchString))
-                    _processMatches.Add(matchString, _processReport.Description);
+                if (!_processMatches[section].ContainsKey(matchString))
+                    _processMatches[section].Add(matchString, _processReport.Description);
                 return true;
             }
 

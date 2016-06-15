@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AL.Core.Constants;
 
 namespace AL.Core.Models
 {
@@ -9,29 +8,12 @@ namespace AL.Core.Models
     {
         public ActivityReport()
         {
-            WorkActivities = new List<Activity>();
-            NonWorkActivities = new List<Activity>();
-            IdlingActivities = new List<Activity>();
+            SectionActivities = new Dictionary<string, ICollection<Activity>>();
+            SectionHourGoals = new Dictionary<string, float>();
         }
-
-        public DateTime Started => WorkActivities.OrderBy(x => x.Started).Select(x => x.Started).FirstOrDefault();
-        public int PercentOfWorkDay => TotalWorkTime*100/8/60/60;
-        public TimeSpan ElapsedWorkTime => TimeSpan.FromSeconds(TotalWorkTime);
-        public TimeSpan ElapsedNonWorkTime => TimeSpan.FromSeconds(TotalNonWorkTime);
-        public TimeSpan ElapsedIdleTime => TimeSpan.FromSeconds(TotalIdleTime);
-        public TimeSpan ElapsedProcessTime => TimeSpan.FromSeconds(TotalProcessTime);
-        public string ElapsedWorkTimeString => ElapsedWorkTime.ToString("g");
-        public string ElapsedNonWorkTimeString => ElapsedNonWorkTime.ToString("g");
-        public string ElapsedIdleTimeString => ElapsedIdleTime.ToString("g");
-        public string ElapsedProcessTimeString => ElapsedProcessTime.ToString("g");
-        public int TotalWorkTime => WorkActivities.Sum(x => x.Seconds);
-        public int TotalNonWorkTime => NonWorkActivities.Sum(x => x.Seconds);
-        public int TotalIdleTime => IdlingActivities.Sum(x => x.Seconds);
-        public int TotalProcessTime => WorkActivities.FirstOrDefault(x => x.ProcessName == ProcessName)?.Seconds ?? default(int);
-
-        public ICollection<Activity> WorkActivities { get; set; }
-        public ICollection<Activity> NonWorkActivities { get; set; }
-        public ICollection<Activity> IdlingActivities { get; set; }
+        
+        public IDictionary<string, ICollection<Activity>> SectionActivities { get; set; }
+        public IDictionary<string, float> SectionHourGoals { get; set; }
 
         public string ProcessName => ProcessReport?.Name;
         public string ProcessDescription => ProcessReport?.Description;
@@ -47,9 +29,9 @@ namespace AL.Core.Models
         public DateTime LastActive { get; set; } = DateTime.Now;
         public TimeReport TimeReport { get; set; }
 
-        public bool UserIsWorking => ActivityType == ActivityType.Work || ActivityType == ActivityType.WorkRelated;
-        public bool UserIsActive => ActivityType != ActivityType.None;
-        public ActivityType ActivityType { get; set; }
+        public bool UserIsActive { get; set; }
+        public bool UserIsIdle { get; set; }
+        public string ActivityType { get; set; }
 
         public class Activity
         {
@@ -66,5 +48,34 @@ namespace AL.Core.Models
             public TimeSpan Elapsed => TimeSpan.FromSeconds(Seconds);
             public int Percent => (DateTime.Now - Started).Seconds * 100 / Seconds;
         }
+
+        public DateTime Started => SectionActivities[ActivityType].OrderBy(x => x.Started).Select(x => x.Started).First();
+
+        public int PercentOfWorkDay()
+        {
+            if (SectionHourGoals[ActivityType].Equals((float)0.0))
+                return 0;
+
+            return (int) (TotalTime*100/SectionHourGoals[ActivityType]/60/60);
+        }
+        public int TotalTime => SectionActivities.Sum(activity => activity.Value.Sum(process => process.Seconds));
+
+        public int TotalCurrentActivityTime => TotalActivityTime(ActivityType);
+        public TimeSpan ElapsedCurrentActivityTime => ElapsedActivityTime(ActivityType);
+        public string ElapsedCurrentActivityTimeString => ElapsedActivityTimeString(ActivityType);
+
+        public int TotalActivityTime(string activity)
+        {
+            if (!SectionActivities.ContainsKey(activity))
+                return 0;
+
+            return SectionActivities[activity].Sum(x => x.Seconds);
+        }
+
+        public string ElapsedActivityTimeString(string activity)
+            => ElapsedActivityTime(activity).ToString("g");
+
+        public TimeSpan ElapsedActivityTime(string activity)
+            => TimeSpan.FromSeconds(TotalActivityTime(activity));
     }
 }

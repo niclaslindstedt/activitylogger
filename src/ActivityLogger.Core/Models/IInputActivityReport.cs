@@ -4,6 +4,6 @@ namespace AL.Core.Models
 {
     public interface IInputActivityReport
     {
-        DateTime LastActivity { get; }
+        DateTime LatestActivity { get; }
     }
 }

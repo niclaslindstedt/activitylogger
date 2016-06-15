@@ -1,9 +1,9 @@
-﻿using AL.Core.Constants;
+﻿using AL.Core.Models;
 
 namespace AL.Core.Interfaces
 {
     public interface IActivityTypeReceiver
     {
-        void ReportActivityType(ActivityType activityType);
+        void ReportActivityType(ActivityTypeReport activityTypeReport);
     }
 }

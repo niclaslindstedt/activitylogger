@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using AL.Core.Constants;
 using AL.Core.Interfaces;
 using AL.Core.Models;
 using Activity = AL.Core.Models.ActivityReport.Activity;
@@ -24,7 +23,8 @@ namespace AL.Core.Loggers
         private bool _processReported;
         private bool _timeReported;
         private bool _activityTypeReported;
-        private ActivityType _currentActivity;
+        
+        private string _currentActivity;
 
         public ActivityLogger(ILogReceiver logReceiver = null)
         {
@@ -33,7 +33,7 @@ namespace AL.Core.Loggers
 
         public override void Log()
         {
-            if (_activityReport.UserIsWorking)
+            if (_activityReport.UserIsActive)
                 _activityReport.LastActive = DateTime.Now;
 
             if (_processReported && _timeReported & _activityTypeReported)
@@ -54,36 +54,20 @@ namespace AL.Core.Loggers
                 return;
 
             var newActivity = _activityReport.ActivityType;
-            if (newActivity != _currentActivity)
+            if ((_currentActivity == string.Empty) || (newActivity == string.Empty))
             {
                 var logMessage = string.Empty;
-                if (_currentActivity == ActivityType.None)
+                if (_currentActivity == string.Empty && newActivity != string.Empty)
                 {
-                    logMessage += "User became active ";
-                    if (newActivity == ActivityType.Work || newActivity == ActivityType.WorkRelated)
-                        logMessage += "and started working.";
-                    else
-                        logMessage += "and started chilling.";
+                    if (!_activityReport.UserIsIdle)
+                        logMessage = $"Idle => {newActivity}";
                 }
-                else if (_currentActivity == ActivityType.NonWorkRelated)
+                else if (_currentActivity != string.Empty)
                 {
-                    logMessage += "User stopped chilling ";
-                    if (newActivity == ActivityType.Work || newActivity == ActivityType.WorkRelated)
-                        logMessage += "and started working.";
-                    else
-                        logMessage += "and became idle.";
+                    if (_activityReport.UserIsIdle)
+                        logMessage = $"{_currentActivity} => Idle";
                 }
-                else if (_currentActivity == ActivityType.Work || _currentActivity == ActivityType.WorkRelated)
-                {
-                    if (newActivity != ActivityType.Work && newActivity != ActivityType.WorkRelated)
-                    {
-                        logMessage += "User stopped working ";
-                        if (newActivity == ActivityType.None)
-                            logMessage += "and became idle.";
-                        else
-                            logMessage += "and started chilling.";
-                    }
-                }
+
                 if (logMessage != string.Empty)
                     _logReceiver.Log(logMessage);
             }
@@ -94,32 +78,11 @@ namespace AL.Core.Loggers
         private void ReportProcessWorkTime()
         {
             var activityType = _activityReport.ActivityType;
+            var activities = _activityReport.SectionActivities[activityType];
 
-            switch (activityType)
-            {
-                case ActivityType.Work:
-                case ActivityType.WorkRelated:
-                    AddProcessTimeToList(_activityReport.WorkActivities, _activityReport);
-                    break;
-
-                case ActivityType.NonWorkRelated:
-                    AddProcessTimeToList(_activityReport.NonWorkActivities, _activityReport);
-                    break;
-
-                case ActivityType.None:
-                    AddProcessTimeToList(_activityReport.IdlingActivities, _activityReport);
-                    break;
-
-                default:
-                    throw new IndexOutOfRangeException();
-            }
-        }
-
-        private void AddProcessTimeToList(ICollection<Activity> activities, ActivityReport activityReport)
-        {
             var processName = _activityReport.ProcessName;
             var processDescription = _activityReport.ProcessDescription;
-            var seconds = _activityReport.TimeSinceLastReport;
+            var seconds = !_activityReport.UserIsIdle ? _activityReport.TimeSinceLastReport : 0;
 
             var activity = activities.FirstOrDefault(x => x.ProcessName == processName);
             if (activity != null)
@@ -132,7 +95,7 @@ namespace AL.Core.Loggers
                     Seconds = seconds
                 });
         }
-
+        
         public void ReportKey(KeyReport keyReport)
         {
             _activityReport.KeyReport = keyReport;
@@ -159,9 +122,18 @@ namespace AL.Core.Loggers
             _timeReported = true;
         }
 
-        public void ReportActivityType(ActivityType activityType)
+        public void ReportActivityType(ActivityTypeReport activityTypeReport)
         {
-            _activityReport.ActivityType = activityType;
+            _activityReport.ActivityType = activityTypeReport.ActivityType;
+            _activityReport.UserIsActive = activityTypeReport.UserIsActive;
+            _activityReport.UserIsIdle = activityTypeReport.UserIsIdle;
+
+            if (!_activityReport.SectionActivities.ContainsKey(_activityReport.ActivityType))
+                _activityReport.SectionActivities[_activityReport.ActivityType] = new List<Activity>();
+
+            if (!_activityReport.SectionHourGoals.ContainsKey(_activityReport.ActivityType))
+                _activityReport.SectionHourGoals[_activityReport.ActivityType] = activityTypeReport.ActivityHourGoal;
+
             _activityTypeReported = true;
         }
     }
