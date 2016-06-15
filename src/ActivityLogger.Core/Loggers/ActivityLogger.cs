@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using AL.Core.Interfaces;
 using AL.Core.Models;
-using Activity = AL.Core.Models.ActivityReport.Activity;
 
 namespace AL.Core.Loggers
 {
@@ -85,7 +83,7 @@ namespace AL.Core.Loggers
         private void ReportProcessWorkTime()
         {
             var activityType = _activityReport.ActivityType;
-            var activities = _activityReport.SectionActivities[activityType];
+            var activities = _activityReport.Sections[activityType].Activities;
 
             var processName = _activityReport.ProcessName;
             var processDescription = _activityReport.ProcessDescription;
@@ -151,11 +149,14 @@ namespace AL.Core.Loggers
             _activityReport.UserIsActive = activityTypeReport.UserIsActive;
             _activityReport.UserIsIdle = activityTypeReport.UserIsIdle;
 
-            if (!_activityReport.SectionActivities.ContainsKey(_activityReport.ActivityType))
-                _activityReport.SectionActivities[_activityReport.ActivityType] = new List<Activity>();
-
-            if (!_activityReport.SectionHourGoals.ContainsKey(_activityReport.ActivityType))
-                _activityReport.SectionHourGoals[_activityReport.ActivityType] = activityTypeReport.ActivityHourGoal;
+            if (_activityReport.CurrentSection == null)
+            {
+                _activityReport.CurrentSection = new Section
+                {
+                    SectionName = activityTypeReport.ActivityType,
+                    HourGoal = activityTypeReport.ActivityHourGoal
+                };
+            }
 
             _activityTypeReported = true;
         }

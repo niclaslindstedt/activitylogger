@@ -51,21 +51,21 @@ namespace AL.Gui
             labelActiveTimeValue.SetPropertyThreadSafe("Text", activityReport.ElapsedCurrentActivityTimeString);
 
             _processWindowContent = string.Empty;
-            foreach (var section in activityReport.SectionActivities)
+            foreach (var section in activityReport.Sections.Values)
             {
-                var sectionName = section.Key;
-                var processes = section.Value;
+                var sectionName = section.SectionName;
+                var activities = section.Activities;
 
                 if (sectionName == string.Empty)
                     continue;
 
                 var totalTime = activityReport.ElapsedActivityTimeString(sectionName);
-                _processWindowContent += $"=== [{totalTime}] [{sectionName.ToUpperInvariant()} ===" + Environment.NewLine;
+                _processWindowContent += $"=== [{totalTime}] [{section.Clicks}] [{section.KeyStrokes}] [{sectionName.ToUpperInvariant()} ===" + Environment.NewLine;
 
                 if (!_processTimes.ContainsKey(sectionName))
                     _processTimes.Add(sectionName, new Dictionary<string, TimeSpan>());
 
-                foreach (var activity in processes)
+                foreach (var activity in activities)
                 {
                     _processTimes[sectionName][activity.ProcessDescription] = activity.Elapsed;
                 }
@@ -90,14 +90,14 @@ namespace AL.Gui
         private void UpdateProcess(string section)
         {
             var orderedList = _processTimes[section].OrderByDescending(x => x.Value);
-            var activities = _activityReport.SectionActivities[section];
+            var activities = _activityReport.Sections[section].Activities;
             for (var i = 0; i < orderedList.Count(); ++i)
             {
                 var rank = (i + 1).ToString();
                 var processDescription = orderedList.ElementAt(i).Key;
                 var activity = activities.First(x => x.ProcessDescription == processDescription);
                 var processTime = orderedList.ElementAt(i).Value.ToString("g");
-                _processWindowContent += $"#{rank.PadRight(2)} [{processTime}] [{activity.Clicks}] {processDescription}" + Environment.NewLine;
+                _processWindowContent += $"#{rank.PadRight(2)} [{processTime}] [{activity.Clicks}] [{activity.KeyStrokes}] {processDescription}" + Environment.NewLine;
             }
         }
     }
