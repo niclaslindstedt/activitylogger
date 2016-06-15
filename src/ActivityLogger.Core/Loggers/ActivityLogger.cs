@@ -105,6 +105,9 @@ namespace AL.Core.Loggers
         
         public void ReportKey(KeyReport keyReport)
         {
+            if (_activityReport.CurrentActivity != null)
+                _activityReport.CurrentActivity.KeyStrokes += keyReport.KeyStrokes;
+
             _activityReport.KeyReport = keyReport;
             // No need to log reported = true here since reports come
             // in when keyboard strokes are recorded.
@@ -112,6 +115,9 @@ namespace AL.Core.Loggers
 
         public void ReportMouse(MouseReport mouseReport)
         {
+            if (_activityReport.CurrentActivity != null)
+                _activityReport.CurrentActivity.Distance += mouseReport.Distance;
+
             _activityReport.MouseReport = mouseReport;
             // No need to log reported = true here since reports
             // are only made when mouse actually moves.
@@ -119,6 +125,9 @@ namespace AL.Core.Loggers
 
         public void ReportMouseClick(MouseClickReport mouseClickReport)
         {
+            if (_activityReport.CurrentActivity != null)
+                _activityReport.CurrentActivity.Clicks += mouseClickReport.Clicks;
+
             _activityReport.MouseClickReport = mouseClickReport;
             // No need to log reported = true here since reports come
             // in when mouse clicks are recorded.

@@ -39,15 +39,12 @@ namespace AL.Core.Loggers
         {
             var keyReport = new KeyReport
             {
-                KeyStrokes = _keyStrokes
+                TotalKeyStrokes = ++_keyStrokes,
+                KeyStrokes = 1,
+                LatestActivity = DateTime.Now
             };
 
             Observer.OnNext(keyReport);
-        }
-
-        private void ReportKey(Keys vkCode)
-        {
-            _keyStrokes++;
         }
         
         private static IntPtr SetHook(NativeMethods.LowLevelKeyboardProc proc)
@@ -65,8 +62,7 @@ namespace AL.Core.Loggers
         {
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
             {
-                var vkCode = Marshal.ReadInt32(lParam);
-                Instance().ReportKey((Keys)vkCode);
+                Instance().Log();
             }
 
             return NativeMethods.CallNextHookEx(_hookId, nCode, wParam, lParam);

@@ -42,7 +42,8 @@ namespace AL.Core.Loggers
         {
             var mouseClickReport = new MouseClickReport
             {
-                Clicks = ++_clicks,
+                TotalClicks = ++_clicks,
+                Clicks = 1,
                 LatestActivity = DateTime.Now
             };
 

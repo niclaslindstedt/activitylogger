@@ -11,21 +11,25 @@ namespace AL.Core.Models
             SectionActivities = new Dictionary<string, ICollection<Activity>>();
             SectionHourGoals = new Dictionary<string, float>();
         }
-        
+
+        public DateTime Started => GetStarted();
+        public Activity CurrentActivity => GetCurrentActivity();
+        public ICollection<Activity> CurrentSection => SectionActivities[ActivityType]; 
         public IDictionary<string, ICollection<Activity>> SectionActivities { get; set; }
+        public float CurrentHourGoal => SectionHourGoals[ActivityType];
         public IDictionary<string, float> SectionHourGoals { get; set; }
 
         public string ProcessName => ProcessReport?.Name;
         public string ProcessDescription => ProcessReport?.Description;
         public ProcessReport ProcessReport { get; set; }
 
-        public double MouseDistance => MouseReport?.Distance ?? default(double);
+        public double TotalDistance => MouseReport?.TotalDistance ?? default(double);
         public MouseReport MouseReport { get; set; }
 
-        public int MouseClicks => MouseClickReport?.Clicks ?? default(int);
+        public int TotalClicks => MouseClickReport?.TotalClicks ?? default(int);
         public MouseClickReport MouseClickReport { get; set; }
 
-        public int KeyStrokes => KeyReport?.KeyStrokes ?? default(int);
+        public int TotalKeyStrokes => KeyReport?.TotalKeyStrokes ?? default(int);
         public KeyReport KeyReport { get; set; }
 
         public int TimeSinceLastReport => TimeReport?.Seconds ?? default(int);
@@ -33,8 +37,8 @@ namespace AL.Core.Models
         public TimeReport TimeReport { get; set; }
 
         public bool UserIsActive { get; set; }
-        public bool UserIsIdle { get; set; }
-        public string ActivityType { get; set; }
+        public bool UserIsIdle { get; set; } = false;
+        public string ActivityType { get; set; } = string.Empty;
 
         public class Activity
         {
@@ -47,19 +51,33 @@ namespace AL.Core.Models
             public string ProcessName { get; set; }
             public string ProcessDescription { get; set; }
             public int Seconds { get; set; }
+            public int Clicks { get; set; }
+            public int KeyStrokes { get; set; }
+            public double Distance { get; set; }
 
             public TimeSpan Elapsed => TimeSpan.FromSeconds(Seconds);
             public int Percent => (DateTime.Now - Started).Seconds * 100 / Seconds;
         }
 
-        public DateTime Started => SectionActivities[ActivityType].OrderBy(x => x.Started).Select(x => x.Started).First();
+        private Activity GetCurrentActivity()
+        {
+            if (string.IsNullOrEmpty(ActivityType))
+                return null;
 
+            return SectionActivities[ActivityType]?.FirstOrDefault(x => x.ProcessName == ProcessName);
+        }
+
+        private DateTime GetStarted()
+        {
+            return SectionActivities[ActivityType].OrderBy(x => x.Started).Select(x => x.Started).First();
+        }
+        
         public int PercentOfWorkDay()
         {
-            if (SectionHourGoals[ActivityType].Equals((float)0.0))
+            if (CurrentHourGoal.Equals((float)0.0))
                 return 0;
 
-            return (int) (TotalTime*100/SectionHourGoals[ActivityType]/60/60);
+            return (int) (TotalTime*100/CurrentHourGoal/60/60);
         }
         public int TotalTime => SectionActivities.Sum(activity => activity.Value.Sum(process => process.Seconds));
 

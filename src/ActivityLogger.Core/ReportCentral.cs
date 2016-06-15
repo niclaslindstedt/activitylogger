@@ -21,17 +21,17 @@ namespace AL.Core
         public void StartReporterThread()
         {
             var activityLogger = ActivityLogger.Instance(_logReceiver);
-            
+
+            var mouseClickLogger = MouseClickLogger.Instance();
+            var mouseClickReporter = MouseClickReporter.Instance(activityLogger);
+            mouseClickReporter.Subscribe(mouseClickLogger);
+
+            var keyLogger = KeyLogger.Instance();
+            var keyReporter = KeyReporter.Instance(activityLogger);
+            keyReporter.Subscribe(keyLogger);
+
             Task.Factory.StartNew(() =>
             {
-                var mouseClickLogger = MouseClickLogger.Instance();
-                var mouseClickReporter = MouseClickReporter.Instance(activityLogger);
-                mouseClickReporter.Subscribe(mouseClickLogger);
-
-                var keyLogger = KeyLogger.Instance();
-                var keyReporter = KeyReporter.Instance(activityLogger);
-                keyReporter.Subscribe(keyLogger);
-
                 var settings = new Settings(new SettingsReader("ActivityLogger.ini"));
 
                 var activityReporter = new ActivityReporter(_activityReceiver);
