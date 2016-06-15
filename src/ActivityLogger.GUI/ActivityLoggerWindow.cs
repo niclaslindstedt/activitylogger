@@ -100,5 +100,58 @@ namespace AL.Gui
                 _processWindowContent += $"#{rank.PadRight(2)} [{processTime}] [{activity.Clicks}] [{activity.KeyStrokes}] {processDescription}" + Environment.NewLine;
             }
         }
+
+        private void ActivityLoggerWindow_Paint(object sender, PaintEventArgs e)
+        {
+            const int rectangleWidth = 554;
+            const int rectangleHeight = 190;
+            const int rectangleLeft = 15;
+            const int rectangleTop = 15;
+            const int rectangleBottom = rectangleTop + rectangleHeight;
+            const int graphWidth = 3;
+            const int axisPaddingX = 25;
+            const int axisPaddingY = 15;
+
+            var g = CreateGraphics();
+            g.DrawRectangle(Pens.Gray, rectangleLeft - 1, rectangleTop - 1, rectangleWidth + 2, rectangleHeight + 2);
+            g.FillRectangle(new SolidBrush(Color.White), rectangleLeft, rectangleTop, rectangleWidth, rectangleHeight);
+            g.DrawLine(Pens.Black, rectangleLeft + axisPaddingX, rectangleTop + axisPaddingY, rectangleLeft + axisPaddingX, rectangleTop + rectangleHeight - axisPaddingY);
+            g.DrawLine(Pens.Black, rectangleLeft + axisPaddingX, rectangleTop + rectangleHeight - axisPaddingY, rectangleLeft + rectangleWidth - axisPaddingX, rectangleTop + rectangleHeight - axisPaddingY);
+
+            if (_activityReport?.KeyStrokesPerMinute == null || !_activityReport.KeyStrokesPerMinute.Any())
+                return;
+
+            var reportsToUse = _activityReport.KeyStrokesPerMinute
+                .Select(x => x.Value)
+                .Reverse()
+                .Take(rectangleWidth / graphWidth)
+                .Reverse()
+                .ToArray();
+            
+            var maxKeyStrokes = reportsToUse.Max();
+
+            labelAxisX.Text = maxKeyStrokes.ToString();
+
+            for (var i = 0; i < reportsToUse.Length; ++i)
+            {
+                var keyStrokes = reportsToUse[i];
+
+                Color color;
+                if ((float)keyStrokes / maxKeyStrokes > 0.9)
+                    color = Color.Green;
+                else if ((float)keyStrokes/maxKeyStrokes > 0.6)
+                    color = Color.YellowGreen;
+                else if ((float)keyStrokes / maxKeyStrokes > 0.3)
+                    color = Color.DarkOrange;
+                else
+                    color = Color.OrangeRed;
+
+                var x = i * graphWidth + rectangleLeft + axisPaddingX + 1;
+                var y = rectangleBottom - Math.Min((float)keyStrokes/maxKeyStrokes*rectangleBottom, rectangleBottom) + rectangleTop + axisPaddingY;
+                var height = Math.Max(0, rectangleBottom - y) - axisPaddingY;
+
+                g.FillRectangle(new SolidBrush(color), x, y, graphWidth, height);
+            }
+        }
     }
 }

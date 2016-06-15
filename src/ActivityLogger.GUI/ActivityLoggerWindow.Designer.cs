@@ -36,9 +36,11 @@
             this.labelActiveTimeValue = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabProcesses = new System.Windows.Forms.TabPage();
-            this.tabLog = new System.Windows.Forms.TabPage();
             this.textBoxProcesses = new System.Windows.Forms.TextBox();
+            this.tabLog = new System.Windows.Forms.TabPage();
             this.textBoxLog = new System.Windows.Forms.TextBox();
+            this.labelAxisX = new System.Windows.Forms.Label();
+            this.labelAxisY = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabProcesses.SuspendLayout();
             this.tabLog.SuspendLayout();
@@ -47,7 +49,7 @@
             // labelProgress
             // 
             this.labelProgress.AutoSize = true;
-            this.labelProgress.Location = new System.Drawing.Point(12, 38);
+            this.labelProgress.Location = new System.Drawing.Point(12, 238);
             this.labelProgress.Name = "labelProgress";
             this.labelProgress.Size = new System.Drawing.Size(79, 13);
             this.labelProgress.TabIndex = 0;
@@ -56,15 +58,15 @@
             // progressBarActiveTime
             // 
             this.progressBarActiveTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBarActiveTime.Location = new System.Drawing.Point(107, 34);
+            this.progressBarActiveTime.Location = new System.Drawing.Point(110, 234);
             this.progressBarActiveTime.Name = "progressBarActiveTime";
-            this.progressBarActiveTime.Size = new System.Drawing.Size(324, 22);
+            this.progressBarActiveTime.Size = new System.Drawing.Size(462, 22);
             this.progressBarActiveTime.TabIndex = 1;
             // 
             // labelActiveProcess
             // 
             this.labelActiveProcess.AutoSize = true;
-            this.labelActiveProcess.Location = new System.Drawing.Point(12, 67);
+            this.labelActiveProcess.Location = new System.Drawing.Point(12, 267);
             this.labelActiveProcess.Name = "labelActiveProcess";
             this.labelActiveProcess.Size = new System.Drawing.Size(80, 13);
             this.labelActiveProcess.TabIndex = 3;
@@ -73,7 +75,7 @@
             // labelActiveProcessValue
             // 
             this.labelActiveProcessValue.AutoSize = true;
-            this.labelActiveProcessValue.Location = new System.Drawing.Point(107, 67);
+            this.labelActiveProcessValue.Location = new System.Drawing.Point(107, 267);
             this.labelActiveProcessValue.Name = "labelActiveProcessValue";
             this.labelActiveProcessValue.Size = new System.Drawing.Size(0, 13);
             this.labelActiveProcessValue.TabIndex = 5;
@@ -81,7 +83,7 @@
             // labelActiveTime
             // 
             this.labelActiveTime.AutoSize = true;
-            this.labelActiveTime.Location = new System.Drawing.Point(12, 9);
+            this.labelActiveTime.Location = new System.Drawing.Point(12, 209);
             this.labelActiveTime.Name = "labelActiveTime";
             this.labelActiveTime.Size = new System.Drawing.Size(70, 13);
             this.labelActiveTime.TabIndex = 6;
@@ -90,7 +92,7 @@
             // labelActiveTimeValue
             // 
             this.labelActiveTimeValue.AutoSize = true;
-            this.labelActiveTimeValue.Location = new System.Drawing.Point(107, 9);
+            this.labelActiveTimeValue.Location = new System.Drawing.Point(107, 209);
             this.labelActiveTimeValue.Name = "labelActiveTimeValue";
             this.labelActiveTimeValue.Size = new System.Drawing.Size(0, 13);
             this.labelActiveTimeValue.TabIndex = 7;
@@ -99,10 +101,10 @@
             // 
             this.tabControl1.Controls.Add(this.tabProcesses);
             this.tabControl1.Controls.Add(this.tabLog);
-            this.tabControl1.Location = new System.Drawing.Point(15, 95);
+            this.tabControl1.Location = new System.Drawing.Point(15, 295);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(416, 154);
+            this.tabControl1.Size = new System.Drawing.Size(557, 154);
             this.tabControl1.TabIndex = 8;
             // 
             // tabProcesses
@@ -111,21 +113,10 @@
             this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(408, 128);
+            this.tabProcesses.Size = new System.Drawing.Size(549, 128);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
-            // 
-            // tabLog
-            // 
-            this.tabLog.Controls.Add(this.textBoxLog);
-            this.tabLog.Location = new System.Drawing.Point(4, 22);
-            this.tabLog.Name = "tabLog";
-            this.tabLog.Padding = new System.Windows.Forms.Padding(3);
-            this.tabLog.Size = new System.Drawing.Size(408, 128);
-            this.tabLog.TabIndex = 1;
-            this.tabLog.Text = "Log";
-            this.tabLog.UseVisualStyleBackColor = true;
             // 
             // textBoxProcesses
             // 
@@ -134,8 +125,19 @@
             this.textBoxProcesses.Location = new System.Drawing.Point(7, 4);
             this.textBoxProcesses.Multiline = true;
             this.textBoxProcesses.Name = "textBoxProcesses";
-            this.textBoxProcesses.Size = new System.Drawing.Size(395, 118);
+            this.textBoxProcesses.Size = new System.Drawing.Size(536, 118);
             this.textBoxProcesses.TabIndex = 0;
+            // 
+            // tabLog
+            // 
+            this.tabLog.Controls.Add(this.textBoxLog);
+            this.tabLog.Location = new System.Drawing.Point(4, 22);
+            this.tabLog.Name = "tabLog";
+            this.tabLog.Padding = new System.Windows.Forms.Padding(3);
+            this.tabLog.Size = new System.Drawing.Size(549, 128);
+            this.tabLog.TabIndex = 1;
+            this.tabLog.Text = "Log";
+            this.tabLog.UseVisualStyleBackColor = true;
             // 
             // textBoxLog
             // 
@@ -144,14 +146,39 @@
             this.textBoxLog.Location = new System.Drawing.Point(7, 4);
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
-            this.textBoxLog.Size = new System.Drawing.Size(395, 118);
+            this.textBoxLog.Size = new System.Drawing.Size(536, 118);
             this.textBoxLog.TabIndex = 0;
+            // 
+            // labelAxisX
+            // 
+            this.labelAxisX.AutoSize = true;
+            this.labelAxisX.BackColor = System.Drawing.Color.White;
+            this.labelAxisX.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelAxisX.Location = new System.Drawing.Point(17, 28);
+            this.labelAxisX.Name = "labelAxisX";
+            this.labelAxisX.Size = new System.Drawing.Size(10, 12);
+            this.labelAxisX.TabIndex = 9;
+            this.labelAxisX.Text = "1";
+            // 
+            // labelAxisY
+            // 
+            this.labelAxisY.AutoSize = true;
+            this.labelAxisY.BackColor = System.Drawing.Color.White;
+            this.labelAxisY.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelAxisY.Location = new System.Drawing.Point(17, 179);
+            this.labelAxisY.Name = "labelAxisY";
+            this.labelAxisY.Size = new System.Drawing.Size(10, 12);
+            this.labelAxisY.TabIndex = 10;
+            this.labelAxisY.Text = "0";
+            this.labelAxisY.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // ActivityLoggerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(443, 261);
+            this.ClientSize = new System.Drawing.Size(584, 461);
+            this.Controls.Add(this.labelAxisY);
+            this.Controls.Add(this.labelAxisX);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.labelActiveTimeValue);
             this.Controls.Add(this.labelActiveTime);
@@ -164,6 +191,7 @@
             this.Name = "ActivityLoggerWindow";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Activity Logger (c) Niclas Lindstedt";
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.ActivityLoggerWindow_Paint);
             this.tabControl1.ResumeLayout(false);
             this.tabProcesses.ResumeLayout(false);
             this.tabProcesses.PerformLayout();
@@ -187,6 +215,8 @@
         private System.Windows.Forms.TabPage tabLog;
         private System.Windows.Forms.TextBox textBoxProcesses;
         private System.Windows.Forms.TextBox textBoxLog;
+        private System.Windows.Forms.Label labelAxisX;
+        private System.Windows.Forms.Label labelAxisY;
     }
 }
 

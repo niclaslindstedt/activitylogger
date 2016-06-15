@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using AL.Core;
 
@@ -14,7 +15,7 @@ namespace AL.Gui
 
             var applicationWindow = new ActivityLoggerWindow();
             var reportCentral = new ReportCentral(applicationWindow, applicationWindow);
-
+            
             reportCentral.StartReporterThread();
 
             Application.Run(applicationWindow);

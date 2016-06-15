@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AL.Core.Interfaces;
 using AL.Core.Loggers;
+using AL.Core.Models;
 using AL.Core.Reporters;
 using AL.Core.Utilities;
 

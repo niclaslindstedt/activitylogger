@@ -106,6 +106,12 @@ namespace AL.Core.Loggers
             if (_activityReport.CurrentActivity != null)
                 _activityReport.CurrentActivity.KeyStrokes += keyReport.KeyStrokes;
 
+            var thisMinute = DateTime.Now.ToString("hh:mm");
+            if (!_activityReport.KeyStrokesPerMinute.ContainsKey(thisMinute))
+                _activityReport.KeyStrokesPerMinute.Add(thisMinute, keyReport.KeyStrokes);
+            else
+                _activityReport.KeyStrokesPerMinute[thisMinute] += keyReport.KeyStrokes;
+
             _activityReport.KeyReport = keyReport;
             // No need to log reported = true here since reports come
             // in when keyboard strokes are recorded.
@@ -116,6 +122,12 @@ namespace AL.Core.Loggers
             if (_activityReport.CurrentActivity != null)
                 _activityReport.CurrentActivity.Distance += mouseReport.Distance;
 
+            var thisMinute = DateTime.Now.ToString("hh:mm");
+            if (!_activityReport.DistancePerMinute.ContainsKey(thisMinute))
+                _activityReport.DistancePerMinute.Add(thisMinute, mouseReport.Distance);
+            else
+                _activityReport.DistancePerMinute[thisMinute] += mouseReport.Distance;
+
             _activityReport.MouseReport = mouseReport;
             // No need to log reported = true here since reports
             // are only made when mouse actually moves.
@@ -125,6 +137,12 @@ namespace AL.Core.Loggers
         {
             if (_activityReport.CurrentActivity != null)
                 _activityReport.CurrentActivity.Clicks += mouseClickReport.Clicks;
+
+            var thisMinute = DateTime.Now.ToString("hh:mm");
+            if (!_activityReport.ClicksPerMinute.ContainsKey(thisMinute))
+                _activityReport.ClicksPerMinute.Add(thisMinute, mouseClickReport.Clicks);
+            else
+                _activityReport.ClicksPerMinute[thisMinute] += mouseClickReport.Clicks;
 
             _activityReport.MouseClickReport = mouseClickReport;
             // No need to log reported = true here since reports come

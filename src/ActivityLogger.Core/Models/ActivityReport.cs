@@ -9,6 +9,9 @@ namespace AL.Core.Models
         public ActivityReport()
         {
             Sections = new Dictionary<string, Section>();
+            ClicksPerMinute = new Dictionary<string, int>();
+            DistancePerMinute = new Dictionary<string, double>();
+            KeyStrokesPerMinute = new Dictionary<string, int>();
         }
 
         public IDictionary<string, Section> Sections { get; set; }
@@ -30,12 +33,15 @@ namespace AL.Core.Models
 
         public double TotalDistance => MouseReport?.TotalDistance ?? default(double);
         public MouseReport MouseReport { get; set; }
+        public IDictionary<string, double> DistancePerMinute { get; set; }
 
         public int TotalClicks => MouseClickReport?.TotalClicks ?? default(int);
         public MouseClickReport MouseClickReport { get; set; }
+        public IDictionary<string, int> ClicksPerMinute { get; set; }
 
         public int TotalKeyStrokes => KeyReport?.TotalKeyStrokes ?? default(int);
         public KeyReport KeyReport { get; set; }
+        public IDictionary<string, int> KeyStrokesPerMinute { get; set; }
 
         public int TimeSinceLastReport => TimeReport?.Seconds ?? default(int);
         public DateTime LastActive { get; set; } = DateTime.Now;
