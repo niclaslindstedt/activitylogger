@@ -12,7 +12,10 @@ namespace AL.Gui
     {
         private string _logWindowContent;
         private string _processWindowContent;
+
         private readonly IDictionary<string, IDictionary<string, TimeSpan>> _processTimes;
+
+        private ActivityReport _activityReport;
 
         public ActivityLoggerWindow()
         {
@@ -25,6 +28,8 @@ namespace AL.Gui
         
         public void ReportActivity(ActivityReport activityReport)
         {
+            _activityReport = activityReport;
+
             progressBarActiveTime.SetPropertyThreadSafe("Value", activityReport.PercentOfWorkDay());
 
             if (activityReport.UserIsActive)
@@ -90,7 +95,7 @@ namespace AL.Gui
                 var rank = (i + 1).ToString();
                 var processDescription = orderedList.ElementAt(i).Key;
                 var processTime = orderedList.ElementAt(i).Value.ToString("g");
-                _processWindowContent += $"#{rank.PadRight(2)} [{processTime}] {processDescription}" + Environment.NewLine;
+                _processWindowContent += $"#{rank.PadRight(2)} [{processTime}] [{_activityReport.MouseClicks}] {processDescription}" + Environment.NewLine;
             }
         }
     }

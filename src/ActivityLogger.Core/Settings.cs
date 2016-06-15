@@ -113,6 +113,7 @@ namespace AL.Core
 
         private void InitializeSections()
         {
+            SectionSettings = new Dictionary<string, IDictionary<string, string>>();
             var userDefinedSections = _settingsReader.GetSection("Sections");
             if (userDefinedSections == null || userDefinedSections.Count == 0)
             {
@@ -128,7 +129,6 @@ namespace AL.Core
             {
                 Sections = userDefinedSections.Select(x => x.Value.ToString()).ToList();
 
-                SectionSettings = new Dictionary<string, IDictionary<string, string>>();
                 foreach (var section in Sections)
                 {
                     WriteSectionSettings(section);

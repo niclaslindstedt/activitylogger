@@ -22,6 +22,9 @@ namespace AL.Core.Models
         public double MouseDistance => MouseReport?.Distance ?? default(double);
         public MouseReport MouseReport { get; set; }
 
+        public int MouseClicks => MouseClickReport?.Clicks ?? default(int);
+        public MouseClickReport MouseClickReport { get; set; }
+
         public int KeyStrokes => KeyReport?.KeyStrokes ?? default(int);
         public KeyReport KeyReport { get; set; }
 

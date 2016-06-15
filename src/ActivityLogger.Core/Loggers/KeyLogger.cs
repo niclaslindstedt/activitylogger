@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AL.Core.Models;
 using AL.Core.Utilities;
+using LowLevelKeyboardProc = AL.Core.Utilities.NativeMethods.LowLevelKeyboardProc;
 
 namespace AL.Core.Loggers
 {
@@ -18,7 +19,7 @@ namespace AL.Core.Loggers
         private const int WH_KEYBOARD_LL = 13;
         private const int WM_KEYDOWN = 0x0100;
 
-        private static readonly NativeMethods.LowLevelKeyboardProc Proc = HookCallback;
+        private static readonly LowLevelKeyboardProc Proc = HookCallback;
 
         private static IntPtr _hookId = IntPtr.Zero;
         

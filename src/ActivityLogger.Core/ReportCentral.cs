@@ -20,17 +20,22 @@ namespace AL.Core
 
         public void StartReporterThread()
         {
+            var activityLogger = ActivityLogger.Instance(_logReceiver);
+            
             Task.Factory.StartNew(() =>
             {
-                var settings = new Settings(new SettingsReader("ActivityLogger.ini"));
-
-                var activityLogger = new ActivityLogger(_logReceiver);
-                var activityReporter = new ActivityReporter(_activityReceiver);
-                activityReporter.Subscribe(activityLogger);
+                var mouseClickLogger = MouseClickLogger.Instance();
+                var mouseClickReporter = MouseClickReporter.Instance(activityLogger);
+                mouseClickReporter.Subscribe(mouseClickLogger);
 
                 var keyLogger = KeyLogger.Instance();
-                var keyReporter = new KeyReporter(activityLogger);
+                var keyReporter = KeyReporter.Instance(activityLogger);
                 keyReporter.Subscribe(keyLogger);
+
+                var settings = new Settings(new SettingsReader("ActivityLogger.ini"));
+
+                var activityReporter = new ActivityReporter(_activityReceiver);
+                activityReporter.Subscribe(activityLogger);
 
                 var mouseLogger = new MouseLogger();
                 var mouseReporter = new MouseReporter(activityLogger);
@@ -52,15 +57,16 @@ namespace AL.Core
                 {
                     Thread.Sleep(1000);
 
-                    // KeyLogger will log when keystrokes are recorded,
-                    // so no need to tell it to log here.
+                    // KeyLogger & MouseClickLogger will log when keystrokes/clicks are
+                    // recorded, so no need to tell it to log here.
 
                     mouseLogger.Log();
                     processLogger.Log();
                     timeLogger.Log();
 
                     activityTypeLogger.DetermineActivityType(
-                        processReporter.ProcessReport, mouseReporter.MouseReport, keyReporter.KeyReport);
+                        processReporter.ProcessReport, mouseReporter.MouseReport,
+                        MouseClickReporter.Instance().MouseClickReport, KeyReporter.Instance().KeyReport);
                     activityTypeLogger.Log();
 
                     activityLogger.Log();
