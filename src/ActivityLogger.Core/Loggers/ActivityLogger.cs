@@ -7,7 +7,7 @@ using AL.Core.Models;
 namespace AL.Core.Loggers
 {
     public class ActivityLogger :
-        Logger<ActivityReport>,
+        Logger<IActivityReport>,
         IKeyReceiver,
         IMouseReceiver,
         IMouseClickReceiver,
@@ -16,12 +16,12 @@ namespace AL.Core.Loggers
         IActivityTypeReceiver
     {
         private static ActivityLogger _instance;
-        public static ActivityLogger Instance(ILogReceiver logReceiver = null)
+        public static ActivityLogger Instance(IActivityReport activityReport, ILogReceiver logReceiver = null)
         {
-            return _instance ?? (_instance = new ActivityLogger(logReceiver));
+            return _instance ?? (_instance = new ActivityLogger(activityReport, logReceiver));
         }
 
-        private readonly ActivityReport _activityReport = new ActivityReport();
+        private readonly IActivityReport _activityReport;
 
         private readonly ILogReceiver _logReceiver;
 
@@ -31,8 +31,9 @@ namespace AL.Core.Loggers
         
         private string _currentActivity;
 
-        private ActivityLogger(ILogReceiver logReceiver = null)
+        private ActivityLogger(IActivityReport activityReport, ILogReceiver logReceiver = null)
         {
+            _activityReport = activityReport;
             _logReceiver = logReceiver;
         }
 

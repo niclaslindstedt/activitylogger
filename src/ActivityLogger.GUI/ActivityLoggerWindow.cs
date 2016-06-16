@@ -15,7 +15,7 @@ namespace AL.Gui
 
         private readonly IDictionary<string, IDictionary<string, TimeSpan>> _processTimes;
 
-        private ActivityReport _activityReport;
+        private IActivityReport _activityReport;
 
         public ActivityLoggerWindow()
         {
@@ -26,7 +26,7 @@ namespace AL.Gui
             LogMessage("Activity Logger initialized");
         }
         
-        public void ReportActivity(ActivityReport activityReport)
+        public void ReportActivity(IActivityReport activityReport)
         {
             _activityReport = activityReport;
 

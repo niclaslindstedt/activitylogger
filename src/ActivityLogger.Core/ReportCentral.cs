@@ -21,7 +21,8 @@ namespace AL.Core
 
         public void StartReporterThread()
         {
-            var activityLogger = ActivityLogger.Instance(_logReceiver);
+            var activityReport = new ActivityReport();
+            var activityLogger = ActivityLogger.Instance(activityReport, _logReceiver);
 
             var mouseClickLogger = MouseClickLogger.Instance();
             var mouseClickReporter = MouseClickReporter.Instance(activityLogger);

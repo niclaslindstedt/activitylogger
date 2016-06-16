@@ -123,6 +123,7 @@
     <Compile Include="Loggers\MouseClickLogger.cs" />
     <Compile Include="Loggers\ProcessLogger.cs" />
     <Compile Include="Models\Activity.cs" />
+    <Compile Include="Models\IActivityReport.cs" />
     <Compile Include="Models\IInputActivityReport.cs" />
     <Compile Include="Models\ActivityTypeReport.cs" />
     <Compile Include="Models\KeyReport.cs" />

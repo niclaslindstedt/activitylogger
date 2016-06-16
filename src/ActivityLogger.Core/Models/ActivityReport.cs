@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace AL.Core.Models
 {
-    public class ActivityReport
+    public class ActivityReport : IActivityReport
     {
         public ActivityReport()
         {
