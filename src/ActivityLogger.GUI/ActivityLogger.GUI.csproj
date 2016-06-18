@@ -117,6 +117,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActivityGraphHelper.cs" />
     <Compile Include="ActivityLoggerWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -124,6 +125,17 @@
       <DependentUpon>ActivityLoggerWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="ControlExtensions.cs" />
+    <Compile Include="Elements\KeyStrokeCountElement.cs" />
+    <Compile Include="Elements\ActiveProcessElapsedElement.cs" />
+    <Compile Include="Elements\ActivityColorIndicatorElement.cs" />
+    <Compile Include="Elements\ActivityGraphElement.cs" />
+    <Compile Include="Elements\ProgressElement.cs" />
+    <Compile Include="Elements\ActiveProcessElement.cs" />
+    <Compile Include="Graph\GraphProperties.cs" />
+    <Compile Include="IControlUpdater.cs" />
+    <Compile Include="Elements\LogElement.cs" />
+    <Compile Include="Elements\ProcessReportElement.cs" />
+    <Compile Include="IGraphicsUpdater.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ActivityLoggerWindow.resx">
@@ -173,6 +185,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helpers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,20 +4,29 @@ using System.Linq;
 
 namespace AL.Core.Models
 {
-    public class ActivityReport
+    public class ActivityReport : IActivityReport
     {
         public ActivityReport()
         {
-            SectionActivities = new Dictionary<string, ICollection<Activity>>();
-            SectionHourGoals = new Dictionary<string, float>();
+            Sections = new Dictionary<string, Section>();
+            ClicksPerMinute = new Dictionary<string, int>();
+            DistancePerMinute = new Dictionary<string, double>();
+            KeyStrokesPerMinute = new Dictionary<string, int>();
+            LogMessages = new List<string>();
         }
 
+        public IDictionary<string, Section> Sections { get; set; }
+
+        public Section CurrentSection
+        {
+            get { return Sections.ContainsKey(ActivityType) ? Sections[ActivityType] : null; }
+            set { Sections[ActivityType] = value; }
+        }
+        
         public DateTime Started => GetStarted();
         public Activity CurrentActivity => GetCurrentActivity();
-        public ICollection<Activity> CurrentSection => SectionActivities[ActivityType]; 
-        public IDictionary<string, ICollection<Activity>> SectionActivities { get; set; }
-        public float CurrentHourGoal => SectionHourGoals[ActivityType];
-        public IDictionary<string, float> SectionHourGoals { get; set; }
+
+        public float CurrentHourGoal => CurrentSection.HourGoal;
 
         public string ProcessName => ProcessReport?.Name;
         public string ProcessDescription => ProcessReport?.Description;
@@ -25,12 +34,15 @@ namespace AL.Core.Models
 
         public double TotalDistance => MouseReport?.TotalDistance ?? default(double);
         public MouseReport MouseReport { get; set; }
+        public IDictionary<string, double> DistancePerMinute { get; set; }
 
         public int TotalClicks => MouseClickReport?.TotalClicks ?? default(int);
         public MouseClickReport MouseClickReport { get; set; }
+        public IDictionary<string, int> ClicksPerMinute { get; set; }
 
         public int TotalKeyStrokes => KeyReport?.TotalKeyStrokes ?? default(int);
         public KeyReport KeyReport { get; set; }
+        public IDictionary<string, int> KeyStrokesPerMinute { get; set; }
 
         public int TimeSinceLastReport => TimeReport?.Seconds ?? default(int);
         public DateTime LastActive { get; set; } = DateTime.Now;
@@ -40,36 +52,19 @@ namespace AL.Core.Models
         public bool UserIsIdle { get; set; } = false;
         public string ActivityType { get; set; } = string.Empty;
 
-        public class Activity
-        {
-            public Activity()
-            {
-                Started = DateTime.Now;
-            }
-
-            public DateTime Started { get; }
-            public string ProcessName { get; set; }
-            public string ProcessDescription { get; set; }
-            public int Seconds { get; set; }
-            public int Clicks { get; set; }
-            public int KeyStrokes { get; set; }
-            public double Distance { get; set; }
-
-            public TimeSpan Elapsed => TimeSpan.FromSeconds(Seconds);
-            public int Percent => (DateTime.Now - Started).Seconds * 100 / Seconds;
-        }
+        public IList<string> LogMessages { get; set; }
 
         private Activity GetCurrentActivity()
         {
             if (string.IsNullOrEmpty(ActivityType))
                 return null;
 
-            return SectionActivities[ActivityType]?.FirstOrDefault(x => x.ProcessName == ProcessName);
+            return Sections[ActivityType].Activities.FirstOrDefault(x => x.ProcessName == ProcessName);
         }
 
         private DateTime GetStarted()
         {
-            return SectionActivities[ActivityType].OrderBy(x => x.Started).Select(x => x.Started).First();
+            return Sections[ActivityType].Activities.OrderBy(x => x.Started).Select(x => x.Started).First();
         }
         
         public int PercentOfWorkDay()
@@ -79,7 +74,7 @@ namespace AL.Core.Models
 
             return (int) (TotalTime*100/CurrentHourGoal/60/60);
         }
-        public int TotalTime => SectionActivities.Sum(activity => activity.Value.Sum(process => process.Seconds));
+        public int TotalTime => Sections.Sum(s => s.Value.Seconds);
 
         public int TotalCurrentActivityTime => TotalActivityTime(ActivityType);
         public TimeSpan ElapsedCurrentActivityTime => ElapsedActivityTime(ActivityType);
@@ -87,10 +82,10 @@ namespace AL.Core.Models
 
         public int TotalActivityTime(string activity)
         {
-            if (!SectionActivities.ContainsKey(activity))
+            if (activity == null || !Sections.ContainsKey(activity))
                 return 0;
 
-            return SectionActivities[activity].Sum(x => x.Seconds);
+            return Sections[activity].Seconds;
         }
 
         public string ElapsedActivityTimeString(string activity)

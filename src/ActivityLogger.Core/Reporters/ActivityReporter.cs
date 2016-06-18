@@ -3,7 +3,7 @@ using AL.Core.Models;
 
 namespace AL.Core.Reporters
 {
-    public class ActivityReporter : Reporter<ActivityReport>
+    public class ActivityReporter : Reporter<IActivityReport>
     {
         private readonly IActivityReceiver _activityReceiver;
         
@@ -12,7 +12,7 @@ namespace AL.Core.Reporters
             _activityReceiver = activityReceiver;
         }
 
-        protected override void Act(ActivityReport activityReport)
+        protected override void Act(IActivityReport activityReport)
         {
             _activityReceiver.ReportActivity(activityReport);
         }

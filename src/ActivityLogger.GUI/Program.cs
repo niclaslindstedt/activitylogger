@@ -13,8 +13,8 @@ namespace AL.Gui
             Application.SetCompatibleTextRenderingDefault(false);
 
             var applicationWindow = new ActivityLoggerWindow();
-            var reportCentral = new ReportCentral(applicationWindow, applicationWindow);
-
+            var reportCentral = new ReportCentral(applicationWindow);
+            
             reportCentral.StartReporterThread();
 
             Application.Run(applicationWindow);

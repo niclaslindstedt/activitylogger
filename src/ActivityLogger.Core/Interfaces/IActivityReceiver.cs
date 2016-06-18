@@ -4,6 +4,6 @@ namespace AL.Core.Interfaces
 {
     public interface IActivityReceiver
     {
-        void ReportActivity(ActivityReport activityReport);
+        void ReportActivity(IActivityReport activityReport);
     }
 }

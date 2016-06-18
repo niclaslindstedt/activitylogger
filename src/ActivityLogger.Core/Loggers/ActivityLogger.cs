@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using AL.Core.Interfaces;
 using AL.Core.Models;
-using Activity = AL.Core.Models.ActivityReport.Activity;
 
 namespace AL.Core.Loggers
 {
     public class ActivityLogger :
-        Logger<ActivityReport>,
+        Logger<IActivityReport>,
         IKeyReceiver,
         IMouseReceiver,
         IMouseClickReceiver,
@@ -18,24 +16,22 @@ namespace AL.Core.Loggers
         IActivityTypeReceiver
     {
         private static ActivityLogger _instance;
-        public static ActivityLogger Instance(ILogReceiver logReceiver = null)
+        public static ActivityLogger Instance(IActivityReport activityReport)
         {
-            return _instance ?? (_instance = new ActivityLogger(logReceiver));
+            return _instance ?? (_instance = new ActivityLogger(activityReport));
         }
 
-        private readonly ActivityReport _activityReport = new ActivityReport();
-
-        private readonly ILogReceiver _logReceiver;
-
+        private readonly IActivityReport _activityReport;
+        
         private bool _processReported;
         private bool _timeReported;
         private bool _activityTypeReported;
         
         private string _currentActivity;
 
-        private ActivityLogger(ILogReceiver logReceiver = null)
+        private ActivityLogger(IActivityReport activityReport)
         {
-            _logReceiver = logReceiver;
+            _activityReport = activityReport;
         }
 
         public override void Log()
@@ -57,9 +53,6 @@ namespace AL.Core.Loggers
 
         private void LogChangeInActivityType()
         {
-            if (_logReceiver == null)
-                return;
-
             var newActivity = _activityReport.ActivityType;
             if ((_currentActivity == string.Empty) || (newActivity == string.Empty))
             {
@@ -76,7 +69,7 @@ namespace AL.Core.Loggers
                 }
 
                 if (logMessage != string.Empty)
-                    _logReceiver.Log(logMessage);
+                    _activityReport.LogMessages.Add(logMessage);
             }
 
             _currentActivity = _activityReport.ActivityType;
@@ -85,7 +78,7 @@ namespace AL.Core.Loggers
         private void ReportProcessWorkTime()
         {
             var activityType = _activityReport.ActivityType;
-            var activities = _activityReport.SectionActivities[activityType];
+            var activities = _activityReport.Sections[activityType].Activities;
 
             var processName = _activityReport.ProcessName;
             var processDescription = _activityReport.ProcessDescription;
@@ -108,6 +101,12 @@ namespace AL.Core.Loggers
             if (_activityReport.CurrentActivity != null)
                 _activityReport.CurrentActivity.KeyStrokes += keyReport.KeyStrokes;
 
+            var thisMinute = DateTime.Now.ToString("hh:mm");
+            if (!_activityReport.KeyStrokesPerMinute.ContainsKey(thisMinute))
+                _activityReport.KeyStrokesPerMinute.Add(thisMinute, keyReport.KeyStrokes);
+            else
+                _activityReport.KeyStrokesPerMinute[thisMinute] += keyReport.KeyStrokes;
+
             _activityReport.KeyReport = keyReport;
             // No need to log reported = true here since reports come
             // in when keyboard strokes are recorded.
@@ -118,6 +117,12 @@ namespace AL.Core.Loggers
             if (_activityReport.CurrentActivity != null)
                 _activityReport.CurrentActivity.Distance += mouseReport.Distance;
 
+            var thisMinute = DateTime.Now.ToString("hh:mm");
+            if (!_activityReport.DistancePerMinute.ContainsKey(thisMinute))
+                _activityReport.DistancePerMinute.Add(thisMinute, mouseReport.Distance);
+            else
+                _activityReport.DistancePerMinute[thisMinute] += mouseReport.Distance;
+
             _activityReport.MouseReport = mouseReport;
             // No need to log reported = true here since reports
             // are only made when mouse actually moves.
@@ -127,6 +132,12 @@ namespace AL.Core.Loggers
         {
             if (_activityReport.CurrentActivity != null)
                 _activityReport.CurrentActivity.Clicks += mouseClickReport.Clicks;
+
+            var thisMinute = DateTime.Now.ToString("hh:mm");
+            if (!_activityReport.ClicksPerMinute.ContainsKey(thisMinute))
+                _activityReport.ClicksPerMinute.Add(thisMinute, mouseClickReport.Clicks);
+            else
+                _activityReport.ClicksPerMinute[thisMinute] += mouseClickReport.Clicks;
 
             _activityReport.MouseClickReport = mouseClickReport;
             // No need to log reported = true here since reports come
@@ -151,11 +162,14 @@ namespace AL.Core.Loggers
             _activityReport.UserIsActive = activityTypeReport.UserIsActive;
             _activityReport.UserIsIdle = activityTypeReport.UserIsIdle;
 
-            if (!_activityReport.SectionActivities.ContainsKey(_activityReport.ActivityType))
-                _activityReport.SectionActivities[_activityReport.ActivityType] = new List<Activity>();
-
-            if (!_activityReport.SectionHourGoals.ContainsKey(_activityReport.ActivityType))
-                _activityReport.SectionHourGoals[_activityReport.ActivityType] = activityTypeReport.ActivityHourGoal;
+            if (_activityReport.CurrentSection == null)
+            {
+                _activityReport.CurrentSection = new Section
+                {
+                    SectionName = activityTypeReport.ActivityType,
+                    HourGoal = activityTypeReport.ActivityHourGoal
+                };
+            }
 
             _activityTypeReported = true;
         }

@@ -101,7 +101,5 @@ namespace AL.Core.Utilities
 
             return sectionData;
         }
-
-
     }
 }
