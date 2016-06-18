@@ -1,5 +1,5 @@
 ﻿using System;
-using AL.Core.Interfaces;
+using System.Collections.Generic;
 using AL.Core.Loggers;
 using AL.Core.Models;
 using AL.Tests.Helpers;
@@ -12,8 +12,7 @@ namespace AL.Tests
     public class ActivityLoggerTest
     {
         private Mock<IActivityReport> _activityReportMock;
-        private Mock<ILogReceiver> _logReceiverMock;
-        private Mock<IObserver<ActivityReport>> _observerMock;
+        private Mock<IObserver<IActivityReport>> _observerMock;
 
         private ActivityLogger _activityLogger;
 
@@ -21,10 +20,9 @@ namespace AL.Tests
         public void SetUp()
         {
             _activityReportMock = new Mock<IActivityReport>();
-            _logReceiverMock = new Mock<ILogReceiver>();
-            _observerMock = new Mock<IObserver<ActivityReport>>();
+            _observerMock = new Mock<IObserver<IActivityReport>>();
 
-            _activityLogger = ActivityLogger.Instance(_activityReportMock.Object, _logReceiverMock.Object);
+            _activityLogger = ActivityLogger.Instance(_activityReportMock.Object);
         }
 
         [TearDown]
@@ -45,6 +43,21 @@ namespace AL.Tests
             _activityLogger.Log();
             
             Assert.IsTrue(lastActive >= DateTime.Now.AddSeconds(-10), "LastActive was not set during Log");
+        }
+
+        [Test]
+        public void Log_IfReportsHaveComeIn_ReportToObserver()
+        {
+            var sectionsMock = new Mock<IDictionary<string, Section>>();
+            _activityReportMock.Setup(x => x.Sections)
+                .Returns(sectionsMock.Object);
+
+            _activityLogger.ReportProcess(new ProcessReport());
+            _activityLogger.ReportTime(new TimeReport());
+            _activityLogger.ReportActivityType(new ActivityTypeReport());
+            _activityLogger.Log();
+
+            _observerMock.Verify(x => x.OnNext(_activityReportMock.Object));
         }
     }
 }

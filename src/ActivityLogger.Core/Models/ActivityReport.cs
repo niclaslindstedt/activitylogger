@@ -12,6 +12,7 @@ namespace AL.Core.Models
             ClicksPerMinute = new Dictionary<string, int>();
             DistancePerMinute = new Dictionary<string, double>();
             KeyStrokesPerMinute = new Dictionary<string, int>();
+            LogMessages = new List<string>();
         }
 
         public IDictionary<string, Section> Sections { get; set; }
@@ -50,6 +51,8 @@ namespace AL.Core.Models
         public bool UserIsActive { get; set; }
         public bool UserIsIdle { get; set; } = false;
         public string ActivityType { get; set; } = string.Empty;
+
+        public IList<string> LogMessages { get; set; }
 
         private Activity GetCurrentActivity()
         {

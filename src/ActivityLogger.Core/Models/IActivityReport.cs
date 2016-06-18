@@ -23,6 +23,7 @@ namespace AL.Core.Models
         MouseReport MouseReport { get; set; }
         ProcessReport ProcessReport { get; set; }
         TimeReport TimeReport { get; set; }
+        IList<string> LogMessages { get; set; }
 
         // Processes
         string ProcessDescription { get; }

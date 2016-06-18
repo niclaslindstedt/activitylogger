@@ -16,25 +16,22 @@ namespace AL.Core.Loggers
         IActivityTypeReceiver
     {
         private static ActivityLogger _instance;
-        public static ActivityLogger Instance(IActivityReport activityReport, ILogReceiver logReceiver = null)
+        public static ActivityLogger Instance(IActivityReport activityReport)
         {
-            return _instance ?? (_instance = new ActivityLogger(activityReport, logReceiver));
+            return _instance ?? (_instance = new ActivityLogger(activityReport));
         }
 
         private readonly IActivityReport _activityReport;
-
-        private readonly ILogReceiver _logReceiver;
-
+        
         private bool _processReported;
         private bool _timeReported;
         private bool _activityTypeReported;
         
         private string _currentActivity;
 
-        private ActivityLogger(IActivityReport activityReport, ILogReceiver logReceiver = null)
+        private ActivityLogger(IActivityReport activityReport)
         {
             _activityReport = activityReport;
-            _logReceiver = logReceiver;
         }
 
         public override void Log()
@@ -56,9 +53,6 @@ namespace AL.Core.Loggers
 
         private void LogChangeInActivityType()
         {
-            if (_logReceiver == null)
-                return;
-
             var newActivity = _activityReport.ActivityType;
             if ((_currentActivity == string.Empty) || (newActivity == string.Empty))
             {
@@ -75,7 +69,7 @@ namespace AL.Core.Loggers
                 }
 
                 if (logMessage != string.Empty)
-                    _logReceiver.Log(logMessage);
+                    _activityReport.LogMessages.Add(logMessage);
             }
 
             _currentActivity = _activityReport.ActivityType;

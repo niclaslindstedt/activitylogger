@@ -111,7 +111,6 @@
     <Compile Include="Constants\SettingStrings.cs" />
     <Compile Include="Constants\ActivityType.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Interfaces\ILogReceiver.cs" />
     <Compile Include="Interfaces\IActivityTypeReceiver.cs" />
     <Compile Include="Interfaces\IActivityReceiver.cs" />
     <Compile Include="Interfaces\IKeyReceiver.cs" />

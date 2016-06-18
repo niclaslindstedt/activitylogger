@@ -191,7 +191,6 @@
             this.Name = "ActivityLoggerWindow";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Activity Logger (c) Niclas Lindstedt";
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.ActivityLoggerWindow_Paint);
             this.tabControl1.ResumeLayout(false);
             this.tabProcesses.ResumeLayout(false);
             this.tabProcesses.PerformLayout();

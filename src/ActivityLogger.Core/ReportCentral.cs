@@ -11,18 +11,16 @@ namespace AL.Core
     public class ReportCentral
     {
         private readonly IActivityReceiver _activityReceiver;
-        private readonly ILogReceiver _logReceiver;
 
-        public ReportCentral(IActivityReceiver activityReceiver, ILogReceiver logReceiver)
+        public ReportCentral(IActivityReceiver activityReceiver)
         {
             _activityReceiver = activityReceiver;
-            _logReceiver = logReceiver;
         }
 
         public void StartReporterThread()
         {
             var activityReport = new ActivityReport();
-            var activityLogger = ActivityLogger.Instance(activityReport, _logReceiver);
+            var activityLogger = ActivityLogger.Instance(activityReport);
 
             var mouseClickLogger = MouseClickLogger.Instance();
             var mouseClickReporter = MouseClickReporter.Instance(activityLogger);
