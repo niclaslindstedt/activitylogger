@@ -8,26 +8,35 @@ using AL.Core.Utilities;
 
 namespace AL.Core
 {
-    public class ReportCentral
+    public class ReportCentral : IReportCentral
     {
+        public IActivityReport ActivityReport { get; set; }
+
         private readonly IActivityReceiver _activityReceiver;
+        private ActivityLogger _activityLogger;
 
         public ReportCentral(IActivityReceiver activityReceiver)
         {
             _activityReceiver = activityReceiver;
+            _activityReceiver.Register(this);
+        }
+
+        public void Reset()
+        {
+            _activityLogger.ReplaceReport(ActivityReport, this);
         }
 
         public void StartReporterThread()
         {
-            var activityReport = new ActivityReport();
-            var activityLogger = ActivityLogger.Instance(activityReport);
+            ActivityReport = new ActivityReport();
+            _activityLogger = ActivityLogger.Instance(ActivityReport);
 
             var mouseClickLogger = MouseClickLogger.Instance();
-            var mouseClickReporter = MouseClickReporter.Instance(activityLogger);
+            var mouseClickReporter = MouseClickReporter.Instance(_activityLogger);
             mouseClickReporter.Subscribe(mouseClickLogger);
 
             var keyLogger = KeyLogger.Instance();
-            var keyReporter = KeyReporter.Instance(activityLogger);
+            var keyReporter = KeyReporter.Instance(_activityLogger);
             keyReporter.Subscribe(keyLogger);
 
             Task.Factory.StartNew(() =>
@@ -35,22 +44,22 @@ namespace AL.Core
                 var settings = new Settings(new SettingsReader("ActivityLogger.ini"));
 
                 var activityReporter = new ActivityReporter(_activityReceiver);
-                activityReporter.Subscribe(activityLogger);
+                activityReporter.Subscribe(_activityLogger);
 
                 var mouseLogger = new MouseLogger();
-                var mouseReporter = new MouseReporter(activityLogger);
+                var mouseReporter = new MouseReporter(_activityLogger);
                 mouseReporter.Subscribe(mouseLogger);
 
                 var processLogger = new ProcessLogger();
-                var processReporter = new ProcessReporter(activityLogger);
+                var processReporter = new ProcessReporter(_activityLogger);
                 processReporter.Subscribe(processLogger);
 
                 var timeLogger = new TimeLogger();
-                var timeReporter = new TimeReporter(activityLogger);
+                var timeReporter = new TimeReporter(_activityLogger);
                 timeReporter.Subscribe(timeLogger);
 
                 var activityTypeLogger = new ActivityTypeLogger(settings);
-                var activityTypeReporter = new ActivityTypeReporter(activityLogger);
+                var activityTypeReporter = new ActivityTypeReporter(_activityLogger);
                 activityTypeReporter.Subscribe(activityTypeLogger);
 
                 while (true)
@@ -69,7 +78,7 @@ namespace AL.Core
                         MouseClickReporter.Instance().MouseClickReport, KeyReporter.Instance().KeyReport);
                     activityTypeLogger.Log();
 
-                    activityLogger.Log();
+                    _activityLogger.Log();
                 }
             });
         }

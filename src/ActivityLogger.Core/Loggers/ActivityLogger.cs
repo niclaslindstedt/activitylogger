@@ -21,8 +21,11 @@ namespace AL.Core.Loggers
             return _instance ?? (_instance = new ActivityLogger(activityReport));
         }
 
-        private readonly IActivityReport _activityReport;
-        
+        private IActivityReport _activityReport;
+
+        private bool _replaceReport;
+        private IReportCentral _reportReceiver;
+
         private bool _processReported;
         private bool _timeReported;
         private bool _activityTypeReported;
@@ -48,6 +51,13 @@ namespace AL.Core.Loggers
             else
             {
                 Debug.Print("Reports are missing");
+            }
+
+            if (_replaceReport)
+            {
+                _activityReport = new ActivityReport();
+                _reportReceiver.ActivityReport = _activityReport;
+                _replaceReport = false;
             }
         }
 
@@ -172,6 +182,12 @@ namespace AL.Core.Loggers
             }
 
             _activityTypeReported = true;
+        }
+
+        public void ReplaceReport(IActivityReport activityReport, IReportCentral returnTo)
+        {
+            _reportReceiver = returnTo;
+            _replaceReport = true;
         }
     }
 }

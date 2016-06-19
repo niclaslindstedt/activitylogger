@@ -63,7 +63,10 @@ namespace AL.Gui.Elements
             {
                 var rank = (i + 1).ToString();
                 var processDescription = orderedList.ElementAt(i).Key;
-                var activity = activities.First(x => x.ProcessDescription == processDescription);
+                var activity = activities.FirstOrDefault(x => x.ProcessDescription == processDescription);
+                if (activity == null)
+                    continue;
+
                 var processTime = orderedList.ElementAt(i).Value.ToString("g");
                 Content += $"#{rank.PadRight(2)} [{processTime}] [{activity.Clicks}] [{activity.KeyStrokes}] {processDescription}" + Environment.NewLine;
             }

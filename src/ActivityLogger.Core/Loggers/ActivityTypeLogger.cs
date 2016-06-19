@@ -106,8 +106,17 @@ namespace AL.Core.Loggers
 
         private bool IsMatchToCurrentProcess(string section, string matchString)
         {
+            var match = false;
             var regex = new Regex(matchString);
-            if (_processReport.Name == matchString || regex.IsMatch(_processReport.WindowTitle) || regex.IsMatch(_processReport.Description))
+
+            if (_processReport.Name == matchString)
+                match = true;
+            else if (!string.IsNullOrEmpty(_processReport.WindowTitle) && regex.IsMatch(_processReport.WindowTitle))
+                match = true;
+            else if (!string.IsNullOrEmpty(_processReport.Description) && regex.IsMatch(_processReport.Description))
+                match = true;
+
+            if (match)
             {
                 if (!_processMatches[section].ContainsKey(matchString))
                     _processMatches[section].Add(matchString, _processReport.Description);
