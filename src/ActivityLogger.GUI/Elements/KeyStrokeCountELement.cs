@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Windows.Forms;
 using AL.Core.Models;
+using AL.Gui.Graph;
 
 namespace AL.Gui.Elements
 {

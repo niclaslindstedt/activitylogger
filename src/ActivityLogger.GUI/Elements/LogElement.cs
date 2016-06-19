@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 using AL.Core.Models;
+using AL.Gui.Graph;
 
 namespace AL.Gui.Elements
 {
@@ -30,6 +31,8 @@ namespace AL.Gui.Elements
 
                 _nextIndex++;
             }
+
+            LogMessage(ActivityGraphHelper.GetBarColor(activityReport.TotalClicks, activityReport.TotalKeyStrokes).ToString());
         }
 
         public void LogMessage(string logMessage)

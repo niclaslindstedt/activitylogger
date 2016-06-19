@@ -41,17 +41,9 @@ namespace AL.Gui.Elements
             {
                 var keyStrokes = kpmList[i];
 
-                Color color;
-                if ((float)keyStrokes / maxKeyStrokes > 0.9)
-                    color = Color.Green;
-                else if ((float)keyStrokes / maxKeyStrokes > 0.6)
-                    color = Color.YellowGreen;
-                else if ((float)keyStrokes / maxKeyStrokes > 0.3)
-                    color = Color.DarkOrange;
-                else
-                    color = Color.OrangeRed;
+                var color = ActivityGraphHelper.GetBarColor(keyStrokes, maxKeyStrokes);
 
-                var x = i * GraphProperties.Width + GraphProperties.Left + GraphProperties.AxisPaddingX + 1;
+                var x = i * GraphProperties.BarWidth + GraphProperties.Left + GraphProperties.AxisPaddingX + 1;
                 var y = GraphProperties.Bottom - Math.Min((float)keyStrokes / maxKeyStrokes * GraphProperties.Bottom, GraphProperties.Bottom) + GraphProperties.Top + GraphProperties.AxisPaddingY;
                 var height = Math.Max(0, GraphProperties.Bottom - y) - GraphProperties.AxisPaddingY;
 

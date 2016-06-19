@@ -1,8 +1,8 @@
-﻿using System.Linq;
+﻿using System.Drawing;
+using System.Linq;
 using AL.Core.Models;
-using AL.Gui.Graph;
 
-namespace AL.Gui
+namespace AL.Gui.Graph
 {
     public static class ActivityGraphHelper
     {
@@ -19,6 +19,22 @@ namespace AL.Gui
                 .Take(GraphProperties.Width / GraphProperties.BarWidth)
                 .Reverse()
                 .ToArray();
-        } 
+        }
+
+        public static Color GetBarColor(int keyStrokes, int maxKeyStrokes)
+        {
+            var pc = (double)keyStrokes/maxKeyStrokes;
+
+            const int red = 255;
+            var green = 255;
+            const int blue = 0;
+
+            if (pc >= 0 && pc <= 1)
+            {
+                green = (int)(255 - pc * 255);
+            }
+
+            return Color.FromArgb(255, red, green, blue);
+        }
     }
 }
