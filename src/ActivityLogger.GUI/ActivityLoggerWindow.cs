@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using AL.Core;
 using AL.Core.Interfaces;
@@ -10,12 +12,16 @@ namespace AL.Gui
     public partial class ActivityLoggerWindow : Form, IActivityReceiver
     {
         private IReportCentral _reporter;
+        private static IActivityReport _activityReport;
+        private static bool _graphThreadStarted;
+        private static readonly object ThreadLock = new object();
+        
         private readonly IList<IControlUpdater> _controls;
 
         public ActivityLoggerWindow()
         {
             InitializeComponent();
-            
+
             _controls = new List<IControlUpdater>
             {
                 new LogElement(textBoxLog, "Text"),
@@ -25,9 +31,7 @@ namespace AL.Gui
                 new ProgressElement(progressBarActiveTime, "Value"),
                 new ActivityColorIndicatorElement(labelActiveTime, "ForeColor"),
                 new ActivityColorIndicatorElement(labelProgress, "ForeColor"),
-                new ActivityColorIndicatorElement(labelActiveProcess, "ForeColor"),
-                new KeyStrokeCountElement(labelAxisX, "Text"),
-                new ActivityGraphElement(CreateGraphics())
+                new ActivityColorIndicatorElement(labelActiveProcess, "ForeColor")
             };
         }
 
@@ -36,8 +40,44 @@ namespace AL.Gui
             _reporter = reporter;
         }
 
+        public void StartGraphThread(params IControlUpdater[] controls)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                _graphThreadStarted = true;
+
+                while (true)
+                {
+                    Thread.Sleep(250);
+                    lock (ThreadLock)
+                    {
+                        _graphThreadStarted = true;
+
+                        foreach (var control in controls)
+                        {
+                            control.Update(_activityReport);
+                        }
+                    }
+                }
+            });
+            
+            _graphThreadStarted = false;
+        }
+        
         public void ReportActivity(IActivityReport activityReport)
         {
+            lock (ThreadLock)
+            {
+                _activityReport = activityReport;
+            }
+
+            if (!_graphThreadStarted)
+            {
+                StartGraphThread(
+                    new KeyStrokeCountElement(labelAxisX, "Text"),
+                    new ActivityGraphElement(CreateGraphics()));
+            }
+
             foreach (var control in _controls)
             {
                 control.Update(activityReport);

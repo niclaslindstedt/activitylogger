@@ -69,7 +69,7 @@
             // 
             this.labelActiveProcess.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelActiveProcess.AutoSize = true;
-            this.labelActiveProcess.Location = new System.Drawing.Point(12, 267);
+            this.labelActiveProcess.Location = new System.Drawing.Point(12, 259);
             this.labelActiveProcess.Name = "labelActiveProcess";
             this.labelActiveProcess.Size = new System.Drawing.Size(80, 13);
             this.labelActiveProcess.TabIndex = 3;
@@ -79,7 +79,7 @@
             // 
             this.labelActiveProcessValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelActiveProcessValue.AutoSize = true;
-            this.labelActiveProcessValue.Location = new System.Drawing.Point(107, 267);
+            this.labelActiveProcessValue.Location = new System.Drawing.Point(107, 259);
             this.labelActiveProcessValue.Name = "labelActiveProcessValue";
             this.labelActiveProcessValue.Size = new System.Drawing.Size(0, 13);
             this.labelActiveProcessValue.TabIndex = 5;
@@ -88,7 +88,7 @@
             // 
             this.labelActiveTime.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelActiveTime.AutoSize = true;
-            this.labelActiveTime.Location = new System.Drawing.Point(12, 209);
+            this.labelActiveTime.Location = new System.Drawing.Point(12, 217);
             this.labelActiveTime.Name = "labelActiveTime";
             this.labelActiveTime.Size = new System.Drawing.Size(70, 13);
             this.labelActiveTime.TabIndex = 6;
@@ -98,7 +98,7 @@
             // 
             this.labelActiveTimeValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelActiveTimeValue.AutoSize = true;
-            this.labelActiveTimeValue.Location = new System.Drawing.Point(107, 209);
+            this.labelActiveTimeValue.Location = new System.Drawing.Point(107, 217);
             this.labelActiveTimeValue.Name = "labelActiveTimeValue";
             this.labelActiveTimeValue.Size = new System.Drawing.Size(0, 13);
             this.labelActiveTimeValue.TabIndex = 7;
