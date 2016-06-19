@@ -117,6 +117,7 @@
     <Compile Include="Interfaces\IMouseClickReceiver.cs" />
     <Compile Include="Interfaces\IMouseReceiver.cs" />
     <Compile Include="Interfaces\IProcessReceiver.cs" />
+    <Compile Include="IReportCentral.cs" />
     <Compile Include="Loggers\ActivityTypeLogger.cs" />
     <Compile Include="Loggers\IActivityTypeLogger.cs" />
     <Compile Include="Loggers\MouseClickLogger.cs" />
