@@ -24,6 +24,8 @@ namespace AL.Core.Loggers
         private static IntPtr _hookId = IntPtr.Zero;
         
         private int _keyStrokes;
+        private Keys _lastKey;
+        private int _repeats;
 
         private KeyLogger()
         {
@@ -33,6 +35,31 @@ namespace AL.Core.Loggers
         public sealed override void Dispose()
         {
             NativeMethods.UnhookWindowsHookEx(_hookId);
+        }
+
+        private void ReportKey(Keys keyPressed)
+        {
+            switch (keyPressed)
+            {
+                case Keys.Shift:
+                case Keys.Control:
+                case Keys.Alt:
+                case Keys.CapsLock:
+                    return;
+            }
+            
+            if (keyPressed == _lastKey)
+            {
+                if (++_repeats >= 2)
+                    return;
+            }
+            else
+            {
+                _repeats = 0;
+            }
+
+            _lastKey = keyPressed;
+            Log();
         }
 
         public override void Log()
@@ -62,7 +89,8 @@ namespace AL.Core.Loggers
         {
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
             {
-                Instance().Log();
+                var vkCode = Marshal.ReadInt32(lParam);
+                Instance().ReportKey((Keys)vkCode);
             }
 
             return NativeMethods.CallNextHookEx(_hookId, nCode, wParam, lParam);
