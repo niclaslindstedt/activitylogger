@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using AL.Core.Models;
 using AL.Core.Utilities;
 using LowLevelKeyboardProc = AL.Core.Utilities.NativeMethods.LowLevelKeyboardProc;
@@ -18,14 +16,13 @@ namespace AL.Core.Loggers
 
         private const int WH_KEYBOARD_LL = 13;
         private const int WM_KEYDOWN = 0x0100;
+        private const int WM_KEYUP = 0x0101;
 
         private static readonly LowLevelKeyboardProc Proc = HookCallback;
 
         private static IntPtr _hookId = IntPtr.Zero;
         
         private int _keyStrokes;
-        private Keys _lastKey;
-        private int _repeats;
 
         private KeyLogger()
         {
@@ -36,32 +33,7 @@ namespace AL.Core.Loggers
         {
             NativeMethods.UnhookWindowsHookEx(_hookId);
         }
-
-        private void ReportKey(Keys keyPressed)
-        {
-            switch (keyPressed)
-            {
-                case Keys.Shift:
-                case Keys.Control:
-                case Keys.Alt:
-                case Keys.CapsLock:
-                    return;
-            }
-            
-            if (keyPressed == _lastKey)
-            {
-                if (++_repeats >= 2)
-                    return;
-            }
-            else
-            {
-                _repeats = 0;
-            }
-
-            _lastKey = keyPressed;
-            Log();
-        }
-
+        
         public override void Log()
         {
             var keyReport = new KeyReport
@@ -74,7 +46,7 @@ namespace AL.Core.Loggers
             Observer.OnNext(keyReport);
         }
         
-        private static IntPtr SetHook(NativeMethods.LowLevelKeyboardProc proc)
+        private static IntPtr SetHook(LowLevelKeyboardProc proc)
         {
             using (var curProcess = Process.GetCurrentProcess())
             {
@@ -87,10 +59,9 @@ namespace AL.Core.Loggers
         
         private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
+            if (nCode >= 0 && wParam == (IntPtr)WM_KEYUP)
             {
-                var vkCode = Marshal.ReadInt32(lParam);
-                Instance().ReportKey((Keys)vkCode);
+                Instance().Log();
             }
 
             return NativeMethods.CallNextHookEx(_hookId, nCode, wParam, lParam);
