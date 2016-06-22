@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using AL.Core.Constants;
 using AL.Core.Interfaces;
 using AL.Core.Models;
 
@@ -16,12 +17,13 @@ namespace AL.Core.Loggers
         IActivityTypeReceiver
     {
         private static ActivityLogger _instance;
-        public static ActivityLogger Instance(IActivityReport activityReport)
+        public static ActivityLogger Instance(IActivityReport activityReport, Settings settings)
         {
-            return _instance ?? (_instance = new ActivityLogger(activityReport));
+            return _instance ?? (_instance = new ActivityLogger(activityReport, settings));
         }
 
         private IActivityReport _activityReport;
+        private readonly Settings _settings;
 
         private bool _replaceReport;
         private IReportCentral _reportReceiver;
@@ -32,15 +34,18 @@ namespace AL.Core.Loggers
         
         private string _currentActivity;
 
-        private ActivityLogger(IActivityReport activityReport)
+        private ActivityLogger(IActivityReport activityReport, Settings settings)
         {
             _activityReport = activityReport;
+            _settings = settings;
         }
 
         public override void Log()
         {
             if (_activityReport.UserIsActive)
                 _activityReport.LastActive = DateTime.Now;
+
+            SetTimeUntilIdle();
 
             if (_processReported && _timeReported & _activityTypeReported)
             {
@@ -59,6 +64,25 @@ namespace AL.Core.Loggers
                 _reportReceiver.ActivityReport = _activityReport;
                 _replaceReport = false;
             }
+        }
+
+        private void SetTimeUntilIdle()
+        {
+            var secondsBeforeConsideredIdle = _settings.GetActivitySettingAsInt(_activityReport.ActivityType,
+                SettingStrings.SecondsBeforeConsideredIdle);
+            var secondsSinceLastActivity = (DateTime.Now - _activityReport.LastInputActivity).TotalSeconds;
+            var timeWhenConsideredIdle = DateTime.Now.AddSeconds(secondsBeforeConsideredIdle - secondsSinceLastActivity);
+            var now = DateTime.Now;
+            var secondsUntilIdle = (timeWhenConsideredIdle - DateTime.Now).TotalSeconds;
+            var percentage = (int)(secondsUntilIdle * 100 / secondsBeforeConsideredIdle);
+
+            if (percentage > 0 && percentage < 100)
+            {
+                
+            }
+
+            _activityReport.TimeUntilIdle = timeWhenConsideredIdle - DateTime.Now;
+            _activityReport.TimeUntilIdlePercentage = Math.Min(100, Math.Max(0, 100-percentage));
         }
 
         private void LogChangeInActivityType()
@@ -117,6 +141,7 @@ namespace AL.Core.Loggers
             else
                 _activityReport.KeyStrokesPerMinute[thisMinute] += keyReport.KeyStrokes;
 
+            _activityReport.LastInputActivity = DateTime.Now;
             _activityReport.KeyReport = keyReport;
             // No need to log reported = true here since reports come
             // in when keyboard strokes are recorded.
@@ -132,6 +157,9 @@ namespace AL.Core.Loggers
                 _activityReport.DistancePerMinute.Add(thisMinute, mouseReport.Distance);
             else
                 _activityReport.DistancePerMinute[thisMinute] += mouseReport.Distance;
+
+            if (mouseReport.Distance > 0)
+                _activityReport.LastInputActivity = DateTime.Now;
 
             _activityReport.MouseReport = mouseReport;
             // No need to log reported = true here since reports
@@ -149,6 +177,7 @@ namespace AL.Core.Loggers
             else
                 _activityReport.ClicksPerMinute[thisMinute] += mouseClickReport.Clicks;
 
+            _activityReport.LastInputActivity = DateTime.Now;
             _activityReport.MouseClickReport = mouseClickReport;
             // No need to log reported = true here since reports come
             // in when mouse clicks are recorded.

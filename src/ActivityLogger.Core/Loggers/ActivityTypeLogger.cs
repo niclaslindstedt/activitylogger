@@ -43,6 +43,9 @@ namespace AL.Core.Loggers
         {
             var activityType = string.Empty;
 
+            if (_processReport == null)
+                return;
+
             var sections = _settings.Sections;
             foreach (var section in sections)
             {

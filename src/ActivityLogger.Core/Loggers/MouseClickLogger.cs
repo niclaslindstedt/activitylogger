@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using AL.Core.Interfaces;
 using AL.Core.Models;
 using AL.Core.Utilities;
 using LowLevelMouseProc = AL.Core.Utilities.NativeMethods.LowLevelMouseProc;
@@ -30,7 +29,9 @@ namespace AL.Core.Loggers
         {
             _proc = HookCallback;
 
-            _hookId = SetHook(_proc);
+            // Don't listen to mouse clicks if debugging. It's a pain in the ass.
+            if (!Debugger.IsAttached)
+                _hookId = SetHook(_proc);
         }
 
         public sealed override void Dispose()

@@ -8,12 +8,16 @@ namespace AL.Core.Models
         // Current state
         string ActivityType { get; set; }
         Activity CurrentActivity { get; }
+        float CurrentActivityShare { get; }
         float CurrentHourGoal { get; }
         Section CurrentSection { get; set; }
         TimeSpan ElapsedCurrentActivityTime { get; }
         string ElapsedCurrentActivityTimeString { get; }
         int TotalCurrentActivityTime { get; }
         DateTime LastActive { get; set; }
+        DateTime LastInputActivity { get; set; }
+        TimeSpan TimeUntilIdle { get; set; }
+        int TimeUntilIdlePercentage { get; set; }
         bool UserIsActive { get; set; }
         bool UserIsIdle { get; set; }
 

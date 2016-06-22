@@ -28,8 +28,10 @@ namespace AL.Core
 
         public void StartReporterThread()
         {
+            var settings = new Settings(new SettingsReader("ActivityLogger.ini"));
+
             ActivityReport = new ActivityReport();
-            _activityLogger = ActivityLogger.Instance(ActivityReport);
+            _activityLogger = ActivityLogger.Instance(ActivityReport, settings);
 
             var mouseClickLogger = MouseClickLogger.Instance();
             var mouseClickReporter = MouseClickReporter.Instance(_activityLogger);
@@ -41,7 +43,6 @@ namespace AL.Core
 
             Task.Factory.StartNew(() =>
             {
-                var settings = new Settings(new SettingsReader("ActivityLogger.ini"));
 
                 var activityReporter = new ActivityReporter(_activityReceiver);
                 activityReporter.Subscribe(_activityLogger);

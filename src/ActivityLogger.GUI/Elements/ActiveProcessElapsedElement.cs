@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using AL.Core.Models;
 
 namespace AL.Gui.Elements
@@ -16,7 +17,12 @@ namespace AL.Gui.Elements
 
         public void Update(IActivityReport activityReport)
         {
-            _coupledControl.SetPropertyThreadSafe(_propertyName, activityReport.ElapsedCurrentActivityTimeString);
+            var elapsed = TimeSpan.FromSeconds(0).ToString("g");
+
+            if (activityReport.CurrentActivity != null)
+                elapsed = activityReport.CurrentActivity.Elapsed.ToString("g");
+
+            _coupledControl.SetPropertyThreadSafe(_propertyName, elapsed);
         }
     }
 }

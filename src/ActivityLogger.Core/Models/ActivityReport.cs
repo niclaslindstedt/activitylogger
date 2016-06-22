@@ -25,6 +25,15 @@ namespace AL.Core.Models
         
         public DateTime Started => GetStarted();
         public Activity CurrentActivity => GetCurrentActivity();
+        public float CurrentActivityShare => GetCurrentActivityShare();
+
+        private float GetCurrentActivityShare()
+        {
+            if (CurrentActivity != null && CurrentSection.Activities.Any(x => x.Seconds > 0))
+                return (float)CurrentActivity.Seconds/CurrentSection.Activities.Sum(x => x.Seconds);
+
+            return 1;
+        }
 
         public float CurrentHourGoal => CurrentSection.HourGoal;
 
@@ -46,6 +55,9 @@ namespace AL.Core.Models
 
         public int TimeSinceLastReport => TimeReport?.Seconds ?? default(int);
         public DateTime LastActive { get; set; } = DateTime.Now;
+        public DateTime LastInputActivity { get; set; } = DateTime.Now;
+        public TimeSpan TimeUntilIdle { get; set; }
+        public int TimeUntilIdlePercentage { get; set; }
         public TimeReport TimeReport { get; set; }
 
         public bool UserIsActive { get; set; }
@@ -59,12 +71,12 @@ namespace AL.Core.Models
             if (string.IsNullOrEmpty(ActivityType))
                 return null;
 
-            return Sections[ActivityType].Activities.FirstOrDefault(x => x.ProcessName == ProcessName);
+            return CurrentSection.Activities.FirstOrDefault(x => x.ProcessName == ProcessName);
         }
 
         private DateTime GetStarted()
         {
-            return Sections[ActivityType].Activities.OrderBy(x => x.Started).Select(x => x.Started).First();
+            return CurrentSection.Activities.OrderBy(x => x.Started).Select(x => x.Started).First();
         }
         
         public int PercentOfWorkDay()
@@ -80,18 +92,18 @@ namespace AL.Core.Models
         public TimeSpan ElapsedCurrentActivityTime => ElapsedActivityTime(ActivityType);
         public string ElapsedCurrentActivityTimeString => ElapsedActivityTimeString(ActivityType);
 
-        public int TotalActivityTime(string activity)
+        public int TotalActivityTime(string section)
         {
-            if (activity == null || !Sections.ContainsKey(activity))
+            if (section == null || !Sections.ContainsKey(section))
                 return 0;
 
-            return Sections[activity].Seconds;
+            return Sections[section].Seconds;
         }
 
-        public string ElapsedActivityTimeString(string activity)
-            => ElapsedActivityTime(activity).ToString("g");
+        public string ElapsedActivityTimeString(string section)
+            => ElapsedActivityTime(section).ToString("g");
 
-        public TimeSpan ElapsedActivityTime(string activity)
-            => TimeSpan.FromSeconds(TotalActivityTime(activity));
+        public TimeSpan ElapsedActivityTime(string section)
+            => TimeSpan.FromSeconds(TotalActivityTime(section));
     }
 }

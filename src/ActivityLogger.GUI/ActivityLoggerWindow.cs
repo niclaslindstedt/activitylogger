@@ -27,11 +27,19 @@ namespace AL.Gui
                 new LogElement(textBoxLog, "Text"),
                 new ProcessReportElement(textBoxProcesses, "Text"),
                 new ActiveProcessElement(labelActiveProcessValue, "Text"),
-                new ActiveProcessElapsedElement(labelActiveTimeValue, "Text"),
-                new ProgressElement(progressBarActiveTime, "Value"),
-                new ActivityColorIndicatorElement(labelActiveTime, "ForeColor"),
+                new ActiveProcessElapsedElement(labelProcessTimeValue, "Text"),
+                new ActivityTimeElapsedElement(labelActivityTimeValue, "Text"),
+                new ProgressElement(progressBarProgress, "Value"),
+                new ProcessShareElement(progressBarProcessShare, "Value"),
+                new TimeUntilIdleProgressElement(progressBarTimeUntilIdle, "Value"),
+                new ActivityColorIndicatorElement(labelActivityTime, "ForeColor"),
+                new ActivityColorIndicatorElement(labelProcessTime, "ForeColor"),
+                new ActivityColorIndicatorElement(labelActiveProcess, "ForeColor"),
                 new ActivityColorIndicatorElement(labelProgress, "ForeColor"),
-                new ActivityColorIndicatorElement(labelActiveProcess, "ForeColor")
+                new ActivityColorIndicatorElement(labelProcessShare, "ForeColor"),
+                new ActivityColorIndicatorElement(labelTimeUntilIdle, "ForeColor"),
+                new ActivityColorIndicatorElement(groupBoxProcessInformation, "ForeColor"),
+                new ActivityColorIndicatorElement(groupBoxProgressInformation, "ForeColor")
             };
         }
 
